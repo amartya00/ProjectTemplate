@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+"""
+This utility helps with my projects. Valid subcommands:
+[1] CreateProject
+"""
+
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
+sys.dont_write_bytecode = True
+
+from lib.CreateProject import CreateProject, CreateProjectException
+from lib.Utils import Utils
+
+
+def main():
+    args = sys.argv
+    if len(args) < 2:
+        print("ERROR: Command required")
+        print(__doc__)
+        return 1
+    command = args[1]
+    args = args[2:]
+
+    if command == "CreateProject":
+        try:
+            return CreateProject.getopts(args)
+        except CreateProjectException as e:
+            Utils.error(str(e))
+    else:
+        print("ERROR: Wrong command: " + command)
+        print(__doc__)
+        return 1
+
+if __name__ == "__main__":
+    main()
