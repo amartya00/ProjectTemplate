@@ -7,13 +7,13 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
-from lib.CreateCPPProject import CPPProject
+from libs.CreateCPPProject import CPPProject
 from Utils import Utils
 
 
 class FBThriftProject (CPPProject):
     def __init__(self, name, root):
-        super(FBThriftProject, self).__init__(self, name, root)
+        super(FBThriftProject, self).__init__(name, root)
 
     def create_resources(self):
         super(FBThriftProject, self).create_resources()

@@ -6,7 +6,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
-from lib.Utils import Utils
+from libs.Utils import Utils
 
 
 class CPPProject (object):
@@ -15,7 +15,7 @@ class CPPProject (object):
             "ProjectName": name,
             "ProjectLang": "cpp",
             "ProjectRoot": root,
-            "SubDirs":  ["src", "lib", "headers"]
+            "SubDirs":  ["src", "libs", "headers"]
         }
 
     @staticmethod
