@@ -36,7 +36,7 @@ class CPPProject (object):
         for s in self.conf["SubDirs"]:
             if not os.path.isdir(os.path.join(self.conf["ProjectRoot"], s)):
                 os.makedirs(os.path.join(self.conf["ProjectRoot"], s))
-            Utils.info("Created folder: " + s)
+                Utils.info("Created folder: " + s)
 
         # Cmake files
         if not os.path.isfile(os.path.join(self.conf["ProjectRoot"], "CMakeLists.txt")):
