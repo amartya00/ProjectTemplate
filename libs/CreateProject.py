@@ -47,6 +47,12 @@ class CreateProject:
             return CreateProject.conf
         return json.loads(open(CreateProject.conf["ConfFile"]).read())
 
+    @staticmethod
+    def save_project(conf):
+        fp = open(os.path.join(CreateProject.conf["ConfRoot"], conf["Name"]), "w")
+        fp.write(json.dumps(conf, indent = 4))
+        fp.close()
+
     def __init__(self, type, name, root = None):
         self.conf = CreateProject.loadconf()
         self.conf["Name"] = name
@@ -60,6 +66,7 @@ class CreateProject:
             self.conf["Type"] = "html"
         else:
             raise CreateProjectException("Invalid project type: " + type + ". Valid types are: " + str(CreateProject.valid_types))
+        CreateProject.save_project(self.conf)
 
     def create_project(self):
             name = self.conf["Name"]
