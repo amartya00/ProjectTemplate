@@ -11,17 +11,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
-from libs.CreateProject import CreateProject, CreateProjectException
+from libs import CreateProject
 from libs.Utils import Utils
+from libs.Project import Project, ProjectException
 
-def show_projects():
-    print("Available projects:\n")
-    if os.path.isdir(CreateProject.conf["ConfRoot"]):
-        for f in os.listdir(CreateProject.conf["ConfRoot"]):
-            if os.path.isfile(os.path.join(CreateProject.conf["ConfRoot"], f)) and not f == ".config":
-                print("[Project]: " + f)
-                print(open(os.path.join(CreateProject.conf["ConfRoot"] ,f)).read())
-    print("\n")
 
 def main():
     args = sys.argv
@@ -35,14 +28,15 @@ def main():
     if command == "CreateProject":
         try:
             return CreateProject.getopts(args)
-        except CreateProjectException as e:
+        except ProjectException as e:
             Utils.error(str(e))
     elif command == "ListProjects":
-        show_projects()
+        Project.show_projects()
     else:
         print("ERROR: Wrong command: " + command)
         print(__doc__)
         return 1
+
 
 if __name__ == "__main__":
     main()

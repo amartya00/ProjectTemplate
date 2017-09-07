@@ -12,6 +12,7 @@ set(INSTALL "/opt/MyApps/")
 add_custom_target(default ALL
     COMMAND ${CMAKE_COMMAND} -P "${SRC}/CopySrc.cmake" "${SRC}/bin" "${DEST}/bin" "EXEC"
     COMMAND ${CMAKE_COMMAND} -P "${SRC}/CopySrc.cmake" "${SRC}/libs" "${DEST}/libs" "NOEXEC"
-    COMMAND ${CMAKE_COMMAND} -P "${SRC}/CopySrc.cmake" "${SRC}/autocompletes" "${DEST}/autocompletes" "NOEXEC")
+    COMMAND ${CMAKE_COMMAND} -P "${SRC}/CopySrc.cmake" "${SRC}/autocompletes" "${DEST}/autocompletes" "NOEXEC"
+    COMMAND ${CMAKE_COMMAND} -P "${SRC}/CopySrc.cmake" "${SRC}/data" "${DEST}/data" "NOEXEC")
 
 install(DIRECTORY ${DEST} DESTINATION ${INSTALL} USE_SOURCE_PERMISSIONS)
