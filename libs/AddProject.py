@@ -1,5 +1,5 @@
 """
-This utility helps create a project.
+This utility helps add an existing project.
 Valid project types:
 * cpp
 * thrift
@@ -15,7 +15,7 @@ from libs.Project import Project, ProjectException
 
 
 def getopts(cmdlineargs):
-    parser = argparse.ArgumentParser(prog="CreateProject", description=__doc__, usage="Todo [options]",
+    parser = argparse.ArgumentParser(prog="AddProject", description=__doc__, usage="Todo [options]",
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-t", "--type", help="The typr of project you want to create. Available types: " + str(Project.projectfilemap.keys()))
     parser.add_argument("-n", "--name", help="Name of the project.")
@@ -47,6 +47,6 @@ def getopts(cmdlineargs):
         templatefile = Project.datafilepath(type)
 
     p = Project(templatefile, name, root)
-    p.create().save(Project.loadconf()["ConfRoot"])
+    p.add(Project.loadconf()["ConfRoot"])
 
     return True

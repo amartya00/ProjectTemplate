@@ -3,6 +3,7 @@
 This utility helps with my projects. Valid subcommands:
 [1] CreateProject
 [2] ListProjects
+[3] AddProject
 """
 
 import os
@@ -12,6 +13,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
 from libs import CreateProject
+from libs import AddProject
 from libs.Utils import Utils
 from libs.Project import Project, ProjectException
 
@@ -28,6 +30,11 @@ def main():
     if command == "CreateProject":
         try:
             return CreateProject.getopts(args)
+        except ProjectException as e:
+            Utils.error(str(e))
+    elif command == "AddProject":
+        try:
+            return AddProject.getopts(args)
         except ProjectException as e:
             Utils.error(str(e))
     elif command == "ListProjects":

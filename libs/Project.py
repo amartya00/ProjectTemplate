@@ -88,6 +88,7 @@ class Project (object):
         }
         resources = CreateResources(templatemap, self.conf["Project"]["FileSystemStructure"], self.conf["Root"])
         resources.run()
+        return self
 
     def save(self, saveroot):
         Utils.info("Saving project: " + self.conf["Name"])
@@ -104,4 +105,14 @@ class Project (object):
             )
         )
         fp.close()
+        return self
 
+    def add(self, saveroot):
+        existing_projects = Project.get_projects()
+        for p in existing_projects:
+            if p["Name"] == self.conf["Name"]:
+                raise ProjectException(
+                    "Trying to add a project that already exists (" + self.conf["Name"] + "). Following is more info about it:\n" + json.dumps(
+                        p, indent=4))
+        Utils.info("Adding project: " + self.conf["Name"])
+        return self.save(saveroot)
