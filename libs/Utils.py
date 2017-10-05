@@ -28,7 +28,7 @@ class Utils:
         print("[WARNING] " + message)
 
     @staticmethod
-    def make_package(root, libname):
+    def make_package(root, libname, bucket):
         s3client = boto3.client("s3")
         lib_basename = libname.split(".")[0]
         packagename = lib_basename.replace("lib", "")
@@ -37,28 +37,28 @@ class Utils:
         cmakestr = cmakestr + "project(" + lib_basename + ")\n"
         cmakestr = cmakestr + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
         cmakestr = cmakestr + "install(FILES ${libs} DESTINATION lib)"
-        print("[INFO] Creating directory " + packagedir)
+        Utils.info("Creating directory " + packagedir)
         os.makedirs(packagedir)
 
-        print("[INFO] Creating CMakeLists.txt for project " + packagename)
+        Utils.info("Creating CMakeLists.txt for project " + packagename)
         fp = open(os.path.join(packagedir, "CMakeLists.txt"), "w")
         fp.write(cmakestr)
         fp.close()
 
-        print("[INFO] Copying over " + libname)
+        Utils.info("Copying over " + libname)
         shutil.copyfile(os.path.join(root, libname), os.path.join(packagedir, libname))
 
-        print("[INFO] Creating tar " + packagename + ".tar")
+        Utils.info("Creating tar " + packagename + ".tar")
         tfp = tarfile.open(packagename + ".tar", "w")
         tfp.add(os.path.join(packagedir, libname), arcname=libname)
         tfp.add(os.path.join(packagedir, "CMakeLists.txt"), arcname="CMakeLists.txt")
         tfp.close()
 
-        print("[INFO] Removing folder " + packagedir)
+        Utils.info("Removing folder " + packagedir)
         shutil.rmtree(packagedir)
 
-        print("[INFO] Uploading " + packagename + ".tar to s3 bucket amartya00-service-artifacts")
-        s3client.put_object(ACL="public-read", Bucket="amartya00-service-artifacts", Key=packagename + ".tar",
+        Utils.info("Uploading " + packagename + ".tar to s3 bucket amartya00-service-artifacts")
+        s3client.put_object(ACL="public-read", Bucket=bucket, Key=packagename + ".tar",
                             Body=open(packagename + ".tar", "rb").read())
 
     @staticmethod
