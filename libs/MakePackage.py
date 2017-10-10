@@ -24,21 +24,20 @@ def getopts(cmdlineargs):
 
     if args.name:
         name = args.name
-    else:
-        raise BuilderException("Library name required.")
 
     if args.type:
         type = args.type
     else:
         raise BuilderException("Package type required. Available types: " + str(Builder.PACKAGE_TYPES))
 
-    if args.root:
-        root = args.root
+    if type == "part":
+        if name == None:
+            raise BuilderException("Library name is needed while trying to make a snap part.")
+        b = Builder()
+        b.make_part(root, name)
     else:
-        raise BuilderException("Please provide the location of the library.")
-
-    b = Builder(type)
-    b.make_part(root, name)
+        b = Builder()
+        print(b.make_snap())
 
     return True
 

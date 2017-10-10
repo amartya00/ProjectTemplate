@@ -5,6 +5,7 @@ This utility helps with my projects. Valid subcommands:
 [2] ListProjects
 [3] AddProject
 [4] MakePackage
+[5] BuildProject
 """
 
 import os
@@ -18,6 +19,7 @@ from libs import AddProject
 from libs.Utils import Utils
 from libs.Project import Project, ProjectException
 from libs import MakePackage
+from libs import BuildProject
 from libs.Build import BuilderException
 
 
@@ -47,6 +49,12 @@ def main():
             return MakePackage.getopts(args)
         except BuilderException as e:
             Utils.error(str(e))
+    elif command == "BuildProject":
+        try:
+            return BuildProject.getopts(args)
+        except BuilderException as e:
+            Utils.error(str(e))
+            return False
     else:
         print("ERROR: Wrong command: " + command)
         print(__doc__)

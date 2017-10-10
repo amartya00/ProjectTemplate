@@ -46,7 +46,7 @@
       {
         "Type": "File",
         "Name": ".gitignore",
-        "Contents": "build/\nCMakeLists.txt.user"
+        "Contents": "build/\nCMakeLists.txt.user\n.packagecache\n"
       }
     ]
   }
