@@ -1,0 +1,122 @@
+import unittest
+import os
+import sys
+import json
+import io
+
+from unittest.mock import patch
+
+sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
+
+from lib.DependencyResolver import DependencyResolverException, DependencyResolver
+
+from tst.Mocks import MockPackageInstaller
+from tst.Mocks import MockPackageDownloader
+from tst.Mocks import MockLog
+
+
+class TestDependencyResolver (unittest.TestCase):
+    TEST_BKT = "test_bucket"
+    # Needed to initialize DependencyResolver
+    TEST_PKG = {
+        "Package": "a",
+        "Version": "0.0",
+        "RuntimeDeps": [
+            {
+                "Package": "b",
+                "Version": "0.1"
+            }
+        ],
+        "BuildDeps": [
+            {
+                "Package": "c",
+                "Version": "0.0"
+            }
+        ],
+        "TestDeps": [
+            {
+                "Package": "d",
+                "Version": "1.0"
+            }
+        ],
+        "Dependencies": [
+            {
+                "Package": "b",
+                "Version": "0.1"
+            }
+        ]
+    }
+    # Needed to mock the get_md function of PackageDownloader
+    PKG_MAP = {
+        ("a", "0.0"): TEST_PKG,
+        ("b", "0.1"): {
+            "Dependencies": [
+                {"Package": "e", "Version": "0.0"}
+            ]
+        },
+        ("c", "0.0"): {
+            "Dependencies": [
+                {"Package": "e", "Version": "0.0"}
+            ]
+        },
+        ("d", "1.0"): {
+            "Dependencies": [
+                {"Package": "e", "Version": "0.0"}
+            ]
+        },
+        ("e", "0.0"): {
+            "Dependencies": []
+        }
+    }
+
+    @patch("DependencyResolver.os.path.isfile", return_value = True)
+    @patch("builtins.open", autospec=True)
+    def setUp(self, opn, isf):
+        opn.side_effect = [io.StringIO(json.dumps(TestDependencyResolver.TEST_PKG, indent=4)) for i in range(0, 10)]
+        self.config = {"BucketName": TestDependencyResolver.TEST_BKT}
+        self.logger = MockLog()
+        self.dep = DependencyResolver(self.config, self.logger)
+
+    def test_url_gen(self):
+        assert("https://s3.amazonaws.com/" +
+               TestDependencyResolver.TEST_BKT + "/" +
+               TestDependencyResolver.TEST_PKG["Package"] + "/" +
+               TestDependencyResolver.TEST_PKG["Version"] + "/" +
+               TestDependencyResolver.TEST_PKG["Package"] + ".tar" ==
+               self.dep.s3_url(TestDependencyResolver.TEST_PKG["Package"], TestDependencyResolver.TEST_PKG["Version"]))
+
+    def test_extract_deps(self):
+        extracted = DependencyResolver.extract_deps(TestDependencyResolver.TEST_PKG)
+        expected = []
+        expected.extend(TestDependencyResolver.TEST_PKG["Dependencies"])
+        expected.extend(TestDependencyResolver.TEST_PKG["RuntimeDeps"])
+        expected.extend(TestDependencyResolver.TEST_PKG["TestDeps"])
+        expected.extend(TestDependencyResolver.TEST_PKG["BuildDeps"])
+
+        assert(len(expected) == len(extracted))
+        for pkg in expected:
+            assert pkg in extracted
+
+    """
+    Test plan:
+    Patch PackageDownloader and PackageInstaller
+    Test to see if get_package and install_package are called with all the packages:
+        b, c, d and e
+    """
+    @patch("os.path.isfile", return_value = True)
+    @patch("builtins.open", return_value = io.StringIO(json.dumps(TEST_PKG, indent=4)))
+    @patch("lib.DependencyResolver.PackageDownloader", autospec=True)
+    @patch("lib.DependencyResolver.PackageInstaller", autospec=True)
+    def test_bfs(self, pkg_installer, pkg_downloader, opn, isf):
+        mock_d = MockPackageDownloader(None, None)
+        mock_i = MockPackageInstaller(None, None, TestDependencyResolver.PKG_MAP)
+        pkg_downloader.side_effect = [mock_d]
+        pkg_installer.side_effect = [mock_i]
+        dep_test = DependencyResolver(self.config, self.logger)
+        dep_test.bfs()
+        assert(mock_d.get_package.assert_called_with("e", "0.0"))
+
+
+
+
+

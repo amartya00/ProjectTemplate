@@ -1,3 +1,7 @@
 build/
-*.pyc
 .idea/
+venv/
+.packagecache/
+.idea/
+*.pyc
+
