@@ -1,20 +1,29 @@
-from unittest.mock import Mock
-
-
 class MockPackageInstaller:
     def __init__(self, config, logger, package_map):
         self.package_map = package_map
+        self.invocations = {
+            "install": [],
+            "get_installed_md": []
+        }
 
     def install(self, package_name, package_version):
+        self.invocations["install"].append((package_name, package_version))
         pass
 
     def get_installed_md(self, package_name, package_version):
+        self.invocations["get_installed_md"].append((package_name, package_version))
         return self.package_map[(package_name,package_version)]
 
 
 class MockPackageDownloader:
     def __init__(self, config, logger):
-        pass
+        self.invocations = {
+            "get_package": [],
+            "download_package": [],
+            "extract_package": [],
+            "clear_cache": [],
+            "prep_folders": []
+        }
 
     def prep_folders(self):
         pass
@@ -26,8 +35,7 @@ class MockPackageDownloader:
         pass
 
     def get_package(self, package_name, package_version):
-        print(package_name)
-        print(package_version)
+        self.invocations["get_package"].append((package_name, package_version))
         pass
 
     def clear_cache(self, package_list):

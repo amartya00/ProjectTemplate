@@ -70,4 +70,5 @@ class DependencyResolver:
                         installer.get_installed_md(pkg_name, pkg_version))
                     next_frontier.extend(deps)
         self.logger.info("Resolved dependencies.")
+        self.dependency_list = visited
         return self

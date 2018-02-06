@@ -114,9 +114,10 @@ class TestDependencyResolver (unittest.TestCase):
         pkg_installer.side_effect = [mock_i]
         dep_test = DependencyResolver(self.config, self.logger)
         dep_test.bfs()
-        assert(mock_d.get_package.assert_called_with("e", "0.0"))
 
-
-
-
-
+        assert(len(dep_test.dependency_list) == 5)
+        assert ({"Package": "a", "Version": "0.0"} in dep_test.dependency_list)
+        assert ({"Package": "b", "Version": "0.1"} in dep_test.dependency_list)
+        assert ({"Package": "c", "Version": "0.0"} in dep_test.dependency_list)
+        assert ({"Package": "d", "Version": "1.0"} in dep_test.dependency_list)
+        assert ({"Package": "e", "Version": "0.0"} in dep_test.dependency_list)
