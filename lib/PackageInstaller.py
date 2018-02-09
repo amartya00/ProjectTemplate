@@ -20,7 +20,7 @@ class PackageInstaller:
         self.config = config
         self.logger = logger
         self.cwd = os.getcwd()
-        self.packagecache = os.path.join(self.cwd, ".packagecache")
+        self.packagecache = self.config["LocalPackageCache"]
         if not os.path.isfile(os.path.join(self.cwd, "md.json")):
             self.logger.error("Expected to find md.json file in CWD. Not there!")
             raise PackageInstallerException("Expected md.json file in $CWD.")

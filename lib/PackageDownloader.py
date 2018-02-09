@@ -1,3 +1,10 @@
+"""
+Class: PackageDownloader
+Configuration parameters needed:
+1. PackageCacheRoot
+2. BucketName
+"""
+
 import os
 import tarfile
 import sys
@@ -20,6 +27,7 @@ class PackageDownloaderException (Exception):
 class PackageDownloader:
     def __init__(self, config, logger):
         self.config = config
+        self.logger = logger
 
     def prep_folders(self):
         cache_root = self.config["PackageCacheRoot"]

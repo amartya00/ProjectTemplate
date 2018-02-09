@@ -1,3 +1,7 @@
+import sys
+sys.dont_write_bytecode = True
+
+
 class MockPackageInstaller:
     def __init__(self, config, logger, package_map):
         self.package_map = package_map
@@ -60,3 +64,17 @@ class MockLog:
 
     def debug(self, msg):
         pass
+
+
+class MockTarfilePointer:
+    def __init__(self):
+        self.invocations = {
+            "extractall": [],
+            "close": []
+        }
+
+    def extractall(self, path):
+        self.invocations["extractall"].append(path)
+
+    def close(self):
+        self.invocations["close"].append(None)

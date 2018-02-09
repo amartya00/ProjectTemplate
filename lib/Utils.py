@@ -46,6 +46,8 @@ class Log:
 
 
 def wget(url, dest):
+    print(url)
+    print(dest)
     p = subprocess.Popen(["wget", url, "-O", dest], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     err, out = p.communicate()
     exit_code = True
