@@ -1,13 +1,20 @@
-import os
-import sys
-import subprocess
+"""
+Class: PackageDownloader
+Configuration parameters needed:
+1. PackageCacheRoot
+2. LocalPackageCache
+"""
+
 import json
+import os
+import subprocess
+import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
 
-class PackageInstallerException (Exception):
+class PackageInstallerException(Exception):
     def __init__(self, message="Unknown exception"):
         self.message = message
 
@@ -21,9 +28,6 @@ class PackageInstaller:
         self.logger = logger
         self.cwd = os.getcwd()
         self.packagecache = self.config["LocalPackageCache"]
-        if not os.path.isfile(os.path.join(self.cwd, "md.json")):
-            self.logger.error("Expected to find md.json file in CWD. Not there!")
-            raise PackageInstallerException("Expected md.json file in $CWD.")
         if not os.path.isdir(self.packagecache):
             self.logger.info("Package cache not present. Creating package cache " + self.packagecache)
             os.makedirs(self.packagecache)
@@ -37,7 +41,8 @@ class PackageInstaller:
         os.chdir(local_source)
         # CMAKE
         self.logger.info("Calling cmake in extracted packege: " + package_name + "/" + package_version + ".")
-        p = subprocess.Popen(["cmake", ".", "-DCMAKE_INSTALL_PREFIX=" + local_dest], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(["cmake", ".", "-DCMAKE_INSTALL_PREFIX=" + local_dest], stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
         out, err = p.communicate()
         exit_code = True if p.returncode == 0 else False
         if not exit_code:
@@ -79,10 +84,11 @@ class PackageInstaller:
             os.path.join(package_name, package_version)
         )
         if not os.path.isdir(cache_folder):
-            self.logger.error("Packege " + package_name + "/" + package_version + " not installed. Cannot extract metadata.")
+            self.logger.error(
+                "Packege " + package_name + "/" + package_version + " not installed. Cannot extract metadata.")
             raise PackageInstallerException("Package not installed.")
+        if not os.path.isfile(os.path.join(cache_folder, "md.json")):
+            raise PackageInstallerException(
+                "md.json file missing in installed package: " + package_name + "/" + package_version)
         md = json.loads(open(os.path.join(cache_folder, "md.json"), "r").read())
         return md
-
-
-

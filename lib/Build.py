@@ -1,16 +1,16 @@
 import os
-import sys
-import subprocess
 import shutil
+import subprocess
+import sys
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
-from lib.DependencyResolver import DependencyResolverException, DependencyResolver
+from lib.DependencyResolver import DependencyResolver
 
 
-class BuildException (Exception):
-    def __init__(self, message = "Unknown exception"):
+class BuildException(Exception):
+    def __init__(self, message="Unknown exception"):
         self.message = message
 
     def __str__(self):

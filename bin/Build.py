@@ -6,7 +6,7 @@ sys.dont_write_bytecode = True
 
 from lib.PackageDownloader import PackageDownloaderException, PackageDownloader
 from lib.PackageInstaller import PackageInstallerException, PackageInstaller
-from lib.DependencyResolver import DependencyResolverException, DependencyResolver
+from lib.DependencyResolver import DependencyResolver
 from lib.Utils import Log
 
 
@@ -25,8 +25,8 @@ def main():
     i = PackageInstaller(config=main_config, logger=log)
     r = DependencyResolver(config=main_config, logger=log)
     try:
-        #d.clear_cache([("sex", "0.0"), ("auth", "0.1"), ("auth", "0.0")]).get_package("auth", "0.0")
-        #i.install("auth", "0.0")
+        # d.clear_cache([("sex", "0.0"), ("auth", "0.1"), ("auth", "0.0")]).get_package("auth", "0.0")
+        # i.install("auth", "0.0")
         r.bfs("auth", "0.0")
     except PackageDownloaderException as e:
         print(str(e))

@@ -1,4 +1,5 @@
 import sys
+
 sys.dont_write_bytecode = True
 
 
@@ -16,7 +17,7 @@ class MockPackageInstaller:
 
     def get_installed_md(self, package_name, package_version):
         self.invocations["get_installed_md"].append((package_name, package_version))
-        return self.package_map[(package_name,package_version)]
+        return self.package_map[(package_name, package_version)]
 
 
 class MockPackageDownloader:
@@ -78,3 +79,32 @@ class MockTarfilePointer:
 
     def close(self):
         self.invocations["close"].append(None)
+
+
+class MockProcess:
+    def __init__(self, out, err, exit_code):
+        self.out = out
+        self.err = err
+        self.returncode = exit_code
+        self.invocations = {
+            "communicate": []
+        }
+
+    def communicate(self):
+        return self.out, self.err
+
+
+class MockFilePointer:
+    def __init__(self, read_text):
+        self.read_text = read_text
+        self.invocations = {
+            "read": [],
+            "write": []
+        }
+
+    def read(self):
+        self.invocations["read"].append(None)
+        return self.read_text
+
+    def write(self, write_text):
+        self.invocations["write"].append(write_text)

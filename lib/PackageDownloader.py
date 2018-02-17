@@ -6,9 +6,9 @@ Configuration parameters needed:
 """
 
 import os
-import tarfile
-import sys
 import shutil
+import sys
+import tarfile
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
@@ -16,8 +16,8 @@ sys.dont_write_bytecode = True
 from lib.Utils import wget
 
 
-class PackageDownloaderException (Exception):
-    def __init__(self, message = "UnknownException"):
+class PackageDownloaderException(Exception):
+    def __init__(self, message="UnknownException"):
         self.message = message
 
     def __str__(self):
@@ -56,7 +56,7 @@ class PackageDownloader:
                 if os.path.isdir(cache_folder):
                     self.logger.warn("Removing folder " + cache_folder)
                     shutil.rmtree(cache_folder)
-                    raise PackageDownloaderException("Failed to download package")
+                raise PackageDownloaderException("Failed to download package")
         except Exception as e:
             self.logger.error(str(e))
             raise PackageDownloaderException(str(e))
@@ -77,13 +77,15 @@ class PackageDownloader:
 
     def get_package(self, package_name, package_version):
         if not os.path.isdir(os.path.join(self.config["PackageCacheRoot"],
-                os.path.join(package_name, package_version)
-            )
-        ):
-            self.logger.info("Package " + package_name + "/" + package_version + " not present locally. Need to download.")
+                                          os.path.join(package_name, package_version)
+                                          )
+                             ):
+            self.logger.info(
+                "Package " + package_name + "/" + package_version + " not present locally. Need to download.")
             self.download_package(package_name, package_version).extract_package(package_name, package_version)
         else:
-            self.logger.info("Package " + package_name + "/" + package_version + " present locally. No need to download.")
+            self.logger.info(
+                "Package " + package_name + "/" + package_version + " present locally. No need to download.")
         return self
 
     def clear_cache(self, package_list):

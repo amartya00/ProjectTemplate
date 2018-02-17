@@ -1,22 +1,21 @@
-import unittest
+import io
+import json
 import os
 import sys
-import json
-import io
-
+import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
-from lib.DependencyResolver import DependencyResolverException, DependencyResolver
+from lib.DependencyResolver import DependencyResolver
 
 from tst.Mocks import MockPackageInstaller
 from tst.Mocks import MockPackageDownloader
 from tst.Mocks import MockLog
 
 
-class TestDependencyResolver (unittest.TestCase):
+class TestDependencyResolver(unittest.TestCase):
     TEST_BKT = "test_bucket"
     # Needed to initialize DependencyResolver
     TEST_PKG = {
@@ -70,7 +69,7 @@ class TestDependencyResolver (unittest.TestCase):
         }
     }
 
-    @patch("DependencyResolver.os.path.isfile", return_value = True)
+    @patch("DependencyResolver.os.path.isfile", return_value=True)
     @patch("builtins.open", autospec=True)
     def setUp(self, opn, isf):
         opn.side_effect = [io.StringIO(json.dumps(TestDependencyResolver.TEST_PKG, indent=4)) for i in range(0, 10)]
@@ -79,12 +78,12 @@ class TestDependencyResolver (unittest.TestCase):
         self.dep = DependencyResolver(self.config, self.logger)
 
     def test_url_gen(self):
-        assert("https://s3.amazonaws.com/" +
-               TestDependencyResolver.TEST_BKT + "/" +
-               TestDependencyResolver.TEST_PKG["Package"] + "/" +
-               TestDependencyResolver.TEST_PKG["Version"] + "/" +
-               TestDependencyResolver.TEST_PKG["Package"] + ".tar" ==
-               self.dep.s3_url(TestDependencyResolver.TEST_PKG["Package"], TestDependencyResolver.TEST_PKG["Version"]))
+        assert ("https://s3.amazonaws.com/" +
+                TestDependencyResolver.TEST_BKT + "/" +
+                TestDependencyResolver.TEST_PKG["Package"] + "/" +
+                TestDependencyResolver.TEST_PKG["Version"] + "/" +
+                TestDependencyResolver.TEST_PKG["Package"] + ".tar" ==
+                self.dep.s3_url(TestDependencyResolver.TEST_PKG["Package"], TestDependencyResolver.TEST_PKG["Version"]))
 
     def test_extract_deps(self):
         extracted = DependencyResolver.extract_deps(TestDependencyResolver.TEST_PKG)
@@ -94,7 +93,7 @@ class TestDependencyResolver (unittest.TestCase):
         expected.extend(TestDependencyResolver.TEST_PKG["TestDeps"])
         expected.extend(TestDependencyResolver.TEST_PKG["BuildDeps"])
 
-        assert(len(expected) == len(extracted))
+        assert (len(expected) == len(extracted))
         for pkg in expected:
             assert pkg in extracted
 
@@ -104,8 +103,9 @@ class TestDependencyResolver (unittest.TestCase):
     Test to see if get_package and install_package are called with all the packages:
         b, c, d and e
     """
-    @patch("os.path.isfile", return_value = True)
-    @patch("builtins.open", return_value = io.StringIO(json.dumps(TEST_PKG, indent=4)))
+
+    @patch("os.path.isfile", return_value=True)
+    @patch("builtins.open", return_value=io.StringIO(json.dumps(TEST_PKG, indent=4)))
     @patch("lib.DependencyResolver.PackageDownloader", autospec=True)
     @patch("lib.DependencyResolver.PackageInstaller", autospec=True)
     def test_bfs(self, pkg_installer, pkg_downloader, opn, isf):
@@ -116,7 +116,7 @@ class TestDependencyResolver (unittest.TestCase):
         dep_test = DependencyResolver(self.config, self.logger)
         dep_test.bfs()
 
-        assert(len(dep_test.dependency_list) == 5)
+        assert (len(dep_test.dependency_list) == 5)
         assert ({"Package": "a", "Version": "0.0"} in dep_test.dependency_list)
         assert ({"Package": "b", "Version": "0.1"} in dep_test.dependency_list)
         assert ({"Package": "c", "Version": "0.0"} in dep_test.dependency_list)

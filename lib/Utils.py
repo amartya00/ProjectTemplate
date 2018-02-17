@@ -1,6 +1,6 @@
-import sys
-import subprocess
 import logging
+import subprocess
+import sys
 from logging import handlers
 
 sys.dont_write_bytecode = True
