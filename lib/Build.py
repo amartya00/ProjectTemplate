@@ -1,3 +1,12 @@
+"""
+Class: Build
+Configuration parameters needed:
+1. PackageCacheRoot
+2. LocalPackageCache
+3. BuildFolder
+4. ProjectDir
+"""
+
 import os
 import shutil
 import subprocess
@@ -66,6 +75,8 @@ class Build:
         return self
 
     def run_tests(self):
+        if not os.path.isdir(self.build_folder):
+            raise BuildException("Build folder not present. Please run the build without the -b option")
         cwd = os.getcwd()
         os.chdir(self.build_folder)
         p = subprocess.Popen(["make", "test"], stdout=subprocess.PIPE)

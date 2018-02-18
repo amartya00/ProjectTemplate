@@ -108,3 +108,24 @@ class MockFilePointer:
 
     def write(self, write_text):
         self.invocations["write"].append(write_text)
+
+
+class MockDependencyResolver:
+    def __init__(self, config, logger):
+        self.config = config
+        self.logger = logger
+        self.invocations = {
+            "bfs": []
+        }
+
+    def s3_url(self, package_name, package_version):
+        return None
+
+    @staticmethod
+    def extract_deps(md):
+        return None
+
+    def bfs(self):
+        self.invocations["bfs"].append(None)
+        return self
+
