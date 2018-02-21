@@ -73,7 +73,7 @@ class TestDependencyResolver(unittest.TestCase):
     @patch("builtins.open", autospec=True)
     def setUp(self, opn, isf):
         opn.side_effect = [io.StringIO(json.dumps(TestDependencyResolver.TEST_PKG, indent=4)) for i in range(0, 10)]
-        self.config = {"BucketName": TestDependencyResolver.TEST_BKT}
+        self.config = {"BucketName": TestDependencyResolver.TEST_BKT, "LocalPackageCache": "CACHE"}
         self.logger = MockLog()
         self.dep = DependencyResolver(self.config, self.logger)
 
@@ -122,3 +122,4 @@ class TestDependencyResolver(unittest.TestCase):
         assert ({"Package": "c", "Version": "0.0"} in dep_test.dependency_list)
         assert ({"Package": "d", "Version": "1.0"} in dep_test.dependency_list)
         assert ({"Package": "e", "Version": "0.0"} in dep_test.dependency_list)
+

@@ -35,12 +35,17 @@ class PackageDownloader:
             self.logger.info("Creating cache root: " + cache_root)
             os.makedirs(cache_root)
 
-    def download_package(self, package_name, package_version):
-        bucket_name = self.config["BucketName"]
+    @staticmethod
+    def get_s3_url(bucket_name, package_name, package_version):
         key = package_name + "/" + package_version + "/" + package_name + ".tar"
         url = "https://s3.amazonaws.com/" + bucket_name + "/" + key
+        return url
+
+    def download_package(self, package_name, package_version):
+        bucket_name = self.config["BucketName"]
+        url = PackageDownloader.get_s3_url(bucket_name, package_name, package_version)
         try:
-            self.logger.info("Trying to download file: " + key + " from bucket: " + bucket_name)
+            self.logger.info("Download URL: " + url)
             cache_folder = os.path.join(
                 self.config["PackageCacheRoot"],
                 os.path.join(package_name, package_version)

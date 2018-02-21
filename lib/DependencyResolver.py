@@ -1,3 +1,11 @@
+"""
+Class: Dependency Resolver
+Configuration parameters needed:
+1. PackageCacheRoot
+2. LocalPackageCache
+3. BucketName
+"""
+
 import json
 import os
 import sys
@@ -18,6 +26,8 @@ class DependencyResolverException(Exception):
 
 
 class DependencyResolver:
+    DEPENDENCY_FILE = "dependencies.json"
+
     def __init__(self, config, logger):
         self.config = config
         self.logger = logger
@@ -71,4 +81,7 @@ class DependencyResolver:
                     next_frontier.extend(deps)
         self.logger.info("Resolved dependencies.")
         self.dependency_list = visited
+        fp = open(os.path.join(self.config["LocalPackageCache"], DependencyResolver.DEPENDENCY_FILE), "w")
+        fp.write(json.dumps(self.dependency_list, indent=4))
+        fp.close()
         return self
