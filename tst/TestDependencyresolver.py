@@ -122,4 +122,3 @@ class TestDependencyResolver(unittest.TestCase):
         assert ({"Package": "c", "Version": "0.0"} in dep_test.dependency_list)
         assert ({"Package": "d", "Version": "1.0"} in dep_test.dependency_list)
         assert ({"Package": "e", "Version": "0.0"} in dep_test.dependency_list)
-

@@ -128,4 +128,3 @@ class MockDependencyResolver:
     def bfs(self):
         self.invocations["bfs"].append(None)
         return self
-

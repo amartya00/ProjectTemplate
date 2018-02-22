@@ -1,7 +1,7 @@
 import os
+import subprocess
 import sys
 import unittest
-import subprocess
 
 sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
@@ -35,7 +35,7 @@ class TestBuild(unittest.TestCase):
         r = MockDependencyResolver(None, None)
         mock_resolver.side_effect = [r]
         self.builder.bootstrap()
-        assert(len(r.invocations["bfs"]) == 1)
+        assert (len(r.invocations["bfs"]) == 1)
 
     @patch("os.getcwd", return_value="CWD")
     @patch("os.chdir", return_value=None)
@@ -66,7 +66,7 @@ class TestBuild(unittest.TestCase):
         mock_subprocess.side_effect = [p]
         self.builder.run_cmake()
         popen_calls = [call(["cmake", self.config["ProjectDir"], "-DPACKAGE_CACHE=" + self.config["LocalPackageCache"]],
-                             stdout=subprocess.PIPE)]
+                            stdout=subprocess.PIPE)]
         isdir_calls = [call(self.config["BuildFolder"])]
         makedirs_calls = [call(self.config["BuildFolder"])]
         chdir_calls = [call(self.config["BuildFolder"]), call("CWD")]
@@ -75,7 +75,6 @@ class TestBuild(unittest.TestCase):
         mock_makedirs.assert_has_calls(makedirs_calls, any_order=False)
         mock_subprocess.assert_has_calls(popen_calls, any_order=False)
         mock_chdir.assert_has_calls(chdir_calls)
-
 
     @patch("os.path.isdir", return_value=True)
     @patch("os.getcwd", return_value="CWD")
@@ -134,10 +133,4 @@ class TestBuild(unittest.TestCase):
         isdir_calls = [call(self.config["BuildFolder"]), call(self.config["LocalPackageCache"])]
 
         mock_isdir.assert_has_calls(isdir_calls, any_order=True)
-        assert(not mock_rmtree.called)
-
-
-
-
-
-
+        assert (not mock_rmtree.called)
