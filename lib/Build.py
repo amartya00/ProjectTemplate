@@ -7,6 +7,7 @@ Configuration parameters needed:
 4. ProjectDir
 """
 
+import argparse
 import os
 import shutil
 import subprocess
@@ -16,6 +17,7 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
 from lib.DependencyResolver import DependencyResolver
+from lib.Utils import Log
 
 
 class BuildException(Exception):
@@ -95,3 +97,38 @@ class Build:
             self.logger.info("Cleaned build folder: " + self.build_folder)
         self.logger.info("Done cleaning ...")
         return self
+
+    @staticmethod
+    def getopts(cmd_line_args, config):
+        parser = argparse.ArgumentParser(prog="BuildProject", description=__doc__, usage="BuildProject [options]",
+                                         formatter_class=argparse.RawTextHelpFormatter)
+        parser.add_argument("-b", "--buildonly", help="Just build. Do not try to resolve dependencies, etc.",
+                            action="store_true")
+        parser.add_argument("-t", "--testonly", help="Just run tests. Do not try to resolve dependencies, etc.",
+                            action="store_true")
+        parser.add_argument("-c", "--clean", help="Clean the build folder and package cache.", action="store_true")
+        args = parser.parse_args(cmd_line_args)
+
+        if not os.path.isfile(os.path.join(os.getcwd(), "md.json")):
+            print("Expecting md.json in CWD. Not found")
+            sys.exit(1)
+        logger = Log(config)
+        build_config = {
+            "LocalPackageCache": os.path.join(os.getcwd(), ".packagecache"),
+            "ProjectDir": os.getcwd(),
+            "BuildFolder": os.path.join(os.getcwd(), "build")
+        }
+        config.add_conf_params(build_config)
+        try:
+            b = Build(config, logger)
+            if args.buildonly:
+                b.run_make()
+            elif args.testonly:
+                b.run_tests()
+            elif args.clesn:
+                b.clean()
+            else:
+                b.bootstrap().symlink_bootstrapped_libs().run_cmake().run_make().run_tests()
+        except Exception as e:
+            logger.error(str(e))
+            sys.exit(1)

@@ -56,3 +56,38 @@ def wget(url, dest):
         out = ""
         exit_code = False
     return err, out, exit_code
+
+
+# Return synamically linked libraries
+def ldd(libpath):
+    libs = []
+    p = subprocess.Popen(["ldd", libpath], stdout=subprocess.PIPE)
+    o, e = p.communicate()
+    for l in o.split("\n"):
+        if l.strip() == "":
+            continue
+        else:
+            temp = l.split("=>")
+            if "vdso" in temp[0].strip():
+                continue
+            elif temp[0].strip().lower() == "statically linked":
+                continue
+            elif len(temp) == 2:
+                libs.append((temp[0].split(" ")[0].strip(), temp[1].strip().split(" ")[0]))
+            else:
+                libs.append((temp[0].split("/")[-1].split(" ")[0].strip(), temp[0].split(" ")[0].strip()))
+        return libs
+
+
+def recursiely_gather_libs(input_dict, library, logger):
+    deps = ldd(library)
+    for d in deps:
+        if d[0] not in input_dict.keys():
+            logger.info("[INFO] Gathering dependencies for: " + d[0])
+            input_dict[d[0]] = d[1]
+            recursiely_gather_libs(input_dict, d[1], logger)
+
+
+def get_system_dependencies(library, logger):
+    deps = {}
+    recursiely_gather_libs(deps, library, logger)

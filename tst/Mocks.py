@@ -80,6 +80,9 @@ class MockTarfilePointer:
     def close(self):
         self.invocations["close"].append(None)
 
+    def __enter__(self):
+        pass
+
 
 class MockProcess:
     def __init__(self, out, err, exit_code):
@@ -101,6 +104,12 @@ class MockFilePointer:
             "read": [],
             "write": []
         }
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
     def read(self):
         self.invocations["read"].append(None)
