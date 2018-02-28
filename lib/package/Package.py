@@ -70,15 +70,17 @@ class Package:
             if "LibName" not in snap_part_conf:
                 raise PackageException("A lib part type needs a LibName parameter in packaging information.")
             lib_name = snap_part_conf["LibName"]
-            cmake_str = cmake_str + "project(" + lib_name + ")\n"
+            cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
             cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
             cmake_str = cmake_str + "install(FILES ${libs} DESTINATION lib)"
         elif install_target == "headers":
             if "HeadersSource" not in snap_part_conf:
                 raise PackageException("Need a headers folder to create a header based snap-part.")
+            if "HeadersDest" not in snap_part_conf:
+                raise PackageException("Need a headers folder to create a header based snap-part.")
             folder = snap_part_conf["HeadersSource"]
-            cmake_str = cmake_str + "project(" + folder + ")\n"
-            cmake_str = cmake_str + "install(DIRECTORY ${" + folder + "} DESTINATION headers USE_SOURCE_PERMISSIONS)"
+            cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
+            cmake_str = cmake_str + "install(DIRECTORY " + snap_part_conf["HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
         return cmake_str
 
     def snappy_yaml(self, snappy):

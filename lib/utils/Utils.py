@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import sys
+import os
 from logging import handlers
 
 sys.dont_write_bytecode = True
@@ -91,3 +92,13 @@ def recursiely_gather_libs(input_dict, library, logger):
 def get_system_dependencies(library, logger):
     deps = {}
     recursiely_gather_libs(deps, library, logger)
+
+
+def recursive_file_search(root, fname):
+    files = os.listdir(root)
+    for f in files:
+        if os.path.isfile(os.path.join(root, f)) and f == fname:
+            return os.path.join(root, f)
+        if os.path.isdir(os.path.join(root, f)):
+            return recursive_file_search(os.path.join(root, f), fname)
+    return None

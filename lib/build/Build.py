@@ -12,6 +12,7 @@ import os
 import shutil
 import subprocess
 import sys
+import traceback
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
@@ -112,7 +113,7 @@ class Build:
         if not os.path.isfile(os.path.join(os.getcwd(), "md.json")):
             print("Expecting md.json in CWD. Not found")
             sys.exit(1)
-        logger = Log(config)
+        logger = config.logger
         build_config = {
             "LocalPackageCache": os.path.join(os.getcwd(), ".packagecache"),
             "ProjectDir": os.getcwd(),
@@ -120,15 +121,18 @@ class Build:
         }
         config.add_conf_params(build_config)
         try:
-            b = Build(config, logger)
+            b = Build(config.conf, logger)
             if args.buildonly:
                 b.run_make()
             elif args.testonly:
                 b.run_tests()
-            elif args.clesn:
+            elif args.clean:
                 b.clean()
             else:
                 b.bootstrap().symlink_bootstrapped_libs().run_cmake().run_make().run_tests()
         except Exception as e:
             logger.error(str(e))
+            logger.error("\nStacktrace:\n--------------------------------------")
+            logger.error(traceback.format_exc())
+            logger.error("--------------------------------------\n\n")
             sys.exit(1)
