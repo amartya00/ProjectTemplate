@@ -7,8 +7,8 @@ from unittest.mock import patch, call
 sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
-from lib.Config import Config
-from tst.Mocks import MockFilePointer, MockLog
+from lib.utils.Config import Config
+from tst.testutils.Mocks import MockFilePointer, MockLog
 
 
 class TestConfig(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestConfig(unittest.TestCase):
         "LogFile": "TEST_LOG"
     }
 
-    @patch("lib.Config.Log", return_value=MockLog())
+    @patch("lib.utils.Config.Log", return_value=MockLog())
     @patch("os.path.isdir", return_value=False)
     @patch("os.makedirs", return_value=None)
     @patch("os.path.isfile", return_value=False)
@@ -42,7 +42,7 @@ class TestConfig(unittest.TestCase):
         assert (len(fp_write_conf_file.invocations["write"]) == 1)
         assert (fp_write_conf_file.invocations["write"][0] == json.dumps(Config.DEFAULT_CONF, indent=4))
 
-    @patch("lib.Config.Log", return_value=MockLog())
+    @patch("lib.utils.Config.Log", return_value=MockLog())
     @patch("os.path.isdir", return_value=True)
     @patch("os.path.isfile", return_value=True)
     @patch("builtins.open", autospec=True)
@@ -52,7 +52,7 @@ class TestConfig(unittest.TestCase):
         conf = Config("TEST_LOG")
         assert (TestConfig.CONF_FILE_CONTENT == conf.conf)
 
-    @patch("lib.Config.Log", return_value=MockLog())
+    @patch("lib.utils.Config.Log", return_value=MockLog())
     @patch("os.path.isdir", return_value=True)
     @patch("os.path.isfile", return_value=True)
     @patch("builtins.open", autospec=True)
@@ -69,7 +69,7 @@ class TestConfig(unittest.TestCase):
         assert (Config.DEFAULT_CONF["PackageCacheRoot"] == conf.conf["PackageCacheRoot"])
         assert (Config.DEFAULT_CONF["Level"] == conf.conf["Level"])
 
-    @patch("lib.Config.Log", return_value=MockLog())
+    @patch("lib.utils.Config.Log", return_value=MockLog())
     @patch("os.path.isdir", return_value=True)
     @patch("os.path.isfile", return_value=True)
     @patch("builtins.open", autospec=True)

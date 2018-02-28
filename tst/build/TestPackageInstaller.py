@@ -8,9 +8,9 @@ sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
 from unittest.mock import patch, call
-from tst.Mocks import MockLog, MockProcess, MockFilePointer
+from tst.testutils.Mocks import MockLog, MockProcess, MockFilePointer
 
-from lib.PackageInstaller import PackageInstaller, PackageInstallerException
+from lib.build.PackageInstaller import PackageInstaller, PackageInstallerException
 
 
 class TestPackageInstaller(unittest.TestCase):

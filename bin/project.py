@@ -8,8 +8,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
-from lib.Config import Config
-from lib.Build import Build
+from lib.utils.Config import Config
+from lib.build.Build import Build
 
 USAGE = "USAGE: project <command> <options>"
 AVAILABLE_COMMANDS = ["build", "package", "help"]

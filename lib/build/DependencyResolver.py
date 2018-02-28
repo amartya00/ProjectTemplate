@@ -13,8 +13,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
-from lib.PackageDownloader import PackageDownloader
-from lib.PackageInstaller import PackageInstaller
+from lib.build.PackageDownloader import PackageDownloader
+from lib.build.PackageInstaller import PackageInstaller
 
 
 class DependencyResolverException(Exception):

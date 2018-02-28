@@ -6,9 +6,9 @@ sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
 from unittest.mock import patch
-from tst.Mocks import MockLog
-from lib.PackageDownloader import PackageDownloaderException, PackageDownloader
-from tst.Mocks import MockTarfilePointer
+from tst.testutils.Mocks import MockLog
+from lib.build.PackageDownloader import PackageDownloaderException, PackageDownloader
+from tst.testutils.Mocks import MockTarfilePointer
 
 
 class TestPackageDownloader(unittest.TestCase):
@@ -39,7 +39,7 @@ class TestPackageDownloader(unittest.TestCase):
         makedirs.assert_called_with(self.conf["PackageCacheRoot"])
 
     @patch("os.path.isdir", return_value=True)
-    @patch("lib.PackageDownloader.wget", return_value=(None, None, True))
+    @patch("lib.build.PackageDownloader.wget", return_value=(None, None, True))
     @patch("os.makedirs", return_value=None)
     def test_download_package(self, mkdirs, mock_wget, mock_isdir):
         self.p.download_package(TestPackageDownloader.TEST_PKG, TestPackageDownloader.TEST_VERSION)
@@ -51,7 +51,7 @@ class TestPackageDownloader(unittest.TestCase):
 
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs", return_value=None)
-    @patch("lib.PackageDownloader.wget", return_value=(None, None, False))
+    @patch("lib.build.PackageDownloader.wget", return_value=(None, None, False))
     def test_exception_on_wget_fail(self, mock_wget, mock_makedirs, modk_isdir):
         self.assertRaises(PackageDownloaderException, self.p.download_package, TestPackageDownloader.TEST_PKG,
                           TestPackageDownloader.TEST_VERSION)

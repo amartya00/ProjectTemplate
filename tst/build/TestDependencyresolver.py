@@ -8,11 +8,11 @@ from unittest.mock import patch
 sys.dont_write_bytecode = True
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
-from lib.DependencyResolver import DependencyResolver
+from lib.build.DependencyResolver import DependencyResolver
 
-from tst.Mocks import MockPackageInstaller
-from tst.Mocks import MockPackageDownloader
-from tst.Mocks import MockLog
+from tst.testutils.Mocks import MockPackageInstaller
+from tst.testutils.Mocks import MockPackageDownloader
+from tst.testutils.Mocks import MockLog
 
 
 class TestDependencyResolver(unittest.TestCase):
@@ -69,7 +69,7 @@ class TestDependencyResolver(unittest.TestCase):
         }
     }
 
-    @patch("DependencyResolver.os.path.isfile", return_value=True)
+    @patch("lib.build.DependencyResolver.os.path.isfile", return_value=True)
     @patch("builtins.open", autospec=True)
     def setUp(self, opn, isf):
         opn.side_effect = [io.StringIO(json.dumps(TestDependencyResolver.TEST_PKG, indent=4)) for i in range(0, 10)]
@@ -106,8 +106,8 @@ class TestDependencyResolver(unittest.TestCase):
 
     @patch("os.path.isfile", return_value=True)
     @patch("builtins.open", return_value=io.StringIO(json.dumps(TEST_PKG, indent=4)))
-    @patch("lib.DependencyResolver.PackageDownloader", autospec=True)
-    @patch("lib.DependencyResolver.PackageInstaller", autospec=True)
+    @patch("lib.build.DependencyResolver.PackageDownloader", autospec=True)
+    @patch("lib.build.DependencyResolver.PackageInstaller", autospec=True)
     def test_bfs(self, pkg_installer, pkg_downloader, opn, isf):
         mock_d = MockPackageDownloader(None, None)
         mock_i = MockPackageInstaller(None, None, TestDependencyResolver.PKG_MAP)
