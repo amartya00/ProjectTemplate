@@ -10,6 +10,7 @@ sys.dont_write_bytecode = True
 
 from lib.utils.Config import Config
 from lib.build.Build import Build
+from lib.package.Package import Package
 
 USAGE = "USAGE: project <command> <options>"
 AVAILABLE_COMMANDS = ["build", "package", "help"]
@@ -26,6 +27,8 @@ def main():
     config = Config()
     if command == "build":
         Build.getopts(args, config)
+    elif command == "package":
+        Package.getopts(args, config)
     elif command == "help":
         print("\n\n")
         print(__doc__)
