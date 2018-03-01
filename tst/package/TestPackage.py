@@ -114,7 +114,8 @@ class TestPackage(unittest.TestCase):
         actual_cmake_lists_txt = Package.make_cmake_lists_for_snap_part(self.md["Packaging"][2])
         expected_cmake_lists_txt = "cmake_minimum_required(VERSION 3.0)\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "project(" + self.md["Packaging"][2]["Name"] + ")\n"
-        expected_cmake_lists_txt = expected_cmake_lists_txt + "install(DIRECTORY " + self.md["Packaging"][2]["HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
+        expected_cmake_lists_txt = expected_cmake_lists_txt + "install(DIRECTORY " + self.md["Packaging"][2][
+            "HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
         assert (expected_cmake_lists_txt == actual_cmake_lists_txt)
 
     @patch("subprocess.Popen", autospec=True)

@@ -80,7 +80,8 @@ class Package:
                 raise PackageException("Need a headers folder to create a header based snap-part.")
             folder = snap_part_conf["HeadersSource"]
             cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
-            cmake_str = cmake_str + "install(DIRECTORY " + snap_part_conf["HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
+            cmake_str = cmake_str + "install(DIRECTORY " + snap_part_conf[
+                "HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
         return cmake_str
 
     def snappy_yaml(self, snappy):

@@ -1,7 +1,7 @@
 import logging
+import os
 import subprocess
 import sys
-import os
 from logging import handlers
 
 sys.dont_write_bytecode = True

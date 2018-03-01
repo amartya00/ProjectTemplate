@@ -18,7 +18,6 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 sys.dont_write_bytecode = True
 
 from lib.build.DependencyResolver import DependencyResolver
-from lib.utils.Utils import Log
 
 
 class BuildException(Exception):
