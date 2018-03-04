@@ -144,7 +144,7 @@ class Package:
                         self.logger.info("Copied the snap to: " + os.path.join(self.conf["BuildFolder"], s))
                         self.logger.info("Finshed snap building process.")
             os.chdir(cwd)
-            self.logger.conf("Done building snap.")
+            self.logger.info("Done building snap.")
         return self
 
     def make_snap_part_lib(self, snap_part_conf):
@@ -170,7 +170,7 @@ class Package:
             with tempfile.NamedTemporaryFile() as cmake_file:
                 cmake_file.write(cmake_lists_txt)
                 cmake_file.flush()
-                tfp.add(cmake_file.name, arcname="CmakeLists.txt")
+                tfp.add(cmake_file.name, arcname="CMakeLists.txt")
             tfp.add("md.json", arcname="md.json")
         self.logger.info("Done building snap part lib.")
         return self
@@ -188,9 +188,9 @@ class Package:
             with tempfile.NamedTemporaryFile() as cmake_file:
                 cmake_file.write(cmake_lists_txt)
                 cmake_file.flush()
-                tfp.add(cmake_file.name, arcname="CmakeLists.txt")
+                tfp.add(cmake_file.name, arcname="CMakeLists.txt")
             tfp.add(os.path.join(self.conf["ProjectDir"], snap_part_conf["HeadersSource"]),
-                    arcname=snap_part_conf["Name"])
+                    arcname=snap_part_conf["HeadersDest"])
             tfp.add("md.json", arcname="md.json")
         self.logger.info("Done building snap part headers.")
         return self
