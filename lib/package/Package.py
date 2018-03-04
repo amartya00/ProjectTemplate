@@ -39,7 +39,6 @@ class Package:
             raise PackageException("Expecting md.json present in PWD.")
         with open("md.json", "r") as fp:
             md = json.loads(fp.read())
-        md = json.loads(open("md.json", "r").read())
         self.md = md
         self.conf = conf
         self.logger = logger

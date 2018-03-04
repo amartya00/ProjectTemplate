@@ -17,9 +17,10 @@ class TestPackage(unittest.TestCase):
     EXIT_SUCCESS = 0
     EXIT_FAILURE = 1
 
+    @patch("os.path.isfile", return_value=True)
     @patch("os.path.isdir", return_value=True)
     @patch("builtins.open", autospec=True)
-    def setUp(self, mock_open, mock_isdir):
+    def setUp(self, mock_open, mock_isdir, mock_isfile):
         self.md = {
             "Packaging": [
                 {
@@ -77,10 +78,11 @@ class TestPackage(unittest.TestCase):
             }
         ]
 
-        mock_fp = MockFilePointer(read_text=json.dumps(self.dependencies, indent=4))
-        mock_open.side_effect = [mock_fp]
+        mock_fp_md = MockFilePointer(read_text=json.dumps(self.md, indent=4))
+        mock_fp_dependency_file = MockFilePointer(read_text=json.dumps(self.dependencies, indent=4))
+        mock_open.side_effect = [mock_fp_md, mock_fp_dependency_file]
         self.logger = MockLog()
-        self.p = Package(md=self.md, conf=self.config, logger=self.logger)
+        self.p = Package(conf=self.config, logger=self.logger)
 
     def test_snappy_yaml(self):
         yaml_str = self.p.snappy_yaml(self.md["Packaging"][0])
