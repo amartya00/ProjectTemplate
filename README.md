@@ -1,4 +1,8 @@
 # Build helper
+## Status
+[![codecov](https://codecov.io/gh/amartya00/ProjectTemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/amartya00/ProjectTemplate)
+
+## About
 This utility automates a lot of the build process while developing code. This tool leverages [cmake](https://cmake.org/) and [snapcraft](https://snapcraft.io/) to help work on your code and abstracting away all the headache of building, resolving dependencies and packaging.
 
 ## Overview of workflow
@@ -178,6 +182,4 @@ python ../../../bin/project.py package
 As mentioned before, the build folder will contain 2 tar files:
 * ```b.tar```
 * ```b-headers.tar```
-
-
 

@@ -4,4 +4,6 @@ venv/
 .packagecache/
 .idea/
 *.pyc
+.coverage
+coverage.xml
 
