@@ -166,7 +166,7 @@ class Package:
             raise PackageException("Could not find library " + snap_part_conf["LibName"] + " in build folder.")
         with tarfile.open(os.path.join(self.conf["BuildFolder"], snap_part_conf["Name"] + ".tar"), "w") as tfp:
             tfp.add(lib_path, arcname=snap_part_conf["LibName"])
-            with tempfile.NamedTemporaryFile() as cmake_file:
+            with tempfile.NamedTemporaryFile(mode="w") as cmake_file:
                 cmake_file.write(cmake_lists_txt)
                 cmake_file.flush()
                 tfp.add(cmake_file.name, arcname="CMakeLists.txt")
@@ -184,7 +184,7 @@ class Package:
         self.logger.info("Snap headers CMakeLists.txt: ")
         self.logger.info(cmake_lists_txt)
         with tarfile.open(os.path.join(self.conf["BuildFolder"], snap_part_conf["Name"] + ".tar"), "w") as tfp:
-            with tempfile.NamedTemporaryFile() as cmake_file:
+            with tempfile.NamedTemporaryFile(mode="w") as cmake_file:
                 cmake_file.write(cmake_lists_txt)
                 cmake_file.flush()
                 tfp.add(cmake_file.name, arcname="CMakeLists.txt")
