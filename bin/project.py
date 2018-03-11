@@ -1,5 +1,11 @@
+#!/usr/bin/python3
+
 """
 For more help opn individual commands, please type project <command> --help.
+
+Available sub-commands are:
+* build
+* package
 """
 
 import os
@@ -20,6 +26,7 @@ def main():
     if len(sys.argv) < 2:
         print("\n\nERROR! Expecting a command")
         print(USAGE)
+        print(__doc__)
         print("\n\n")
         sys.exit(1)
     command = sys.argv[1]
