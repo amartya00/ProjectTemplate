@@ -86,22 +86,22 @@ class TestPackage(unittest.TestCase):
 
     def test_snappy_yaml(self):
         yaml_str = self.p.snappy_yaml(self.md["Packaging"][0])
-        actual_yaml = yaml.load(yaml_str)
+        actual_yaml = yaml.safe_load(yaml_str)
         # Test parts
-        assert ("c" in actual_yaml["parts"].keys())
-        assert ("b" in actual_yaml["parts"].keys())
-        assert ("d" in actual_yaml["parts"].keys())
-        assert ("e" in actual_yaml["parts"].keys())
-        assert (self.md["Packaging"][0]["Name"] in actual_yaml["parts"].keys())
-        assert (actual_yaml["name"] == self.md["Packaging"][0]["Name"])
-        assert (actual_yaml["version"] == self.md["Packaging"][0]["Version"])
-        assert (actual_yaml["summary"] == self.md["Packaging"][0]["Summary"])
-        assert (actual_yaml["description"] == self.md["Packaging"][0]["Description"])
-        assert (actual_yaml["confinement"] == self.md["Packaging"][0]["Confinement"])
-        assert (actual_yaml["grade"] == self.md["Packaging"][0]["Grade"])
-        assert (len(actual_yaml["apps"].keys()) == 1)
-        assert (self.md["Packaging"][0]["Apps"][0]["Name"] in actual_yaml["apps"].keys())
-        assert (self.md["Packaging"][0]["Apps"][0]["Command"] ==
+        self.assertTrue("c" in actual_yaml["parts"].keys())
+        self.assertTrue("b" in actual_yaml["parts"].keys())
+        self.assertTrue("d" in actual_yaml["parts"].keys())
+        self.assertTrue("e" in actual_yaml["parts"].keys())
+        self.assertTrue(self.md["Packaging"][0]["Name"] in actual_yaml["parts"].keys())
+        self.assertEqual(actual_yaml["name"], self.md["Packaging"][0]["Name"])
+        self.assertEqual(actual_yaml["version"], self.md["Packaging"][0]["Version"])
+        self.assertEqual(actual_yaml["summary"], self.md["Packaging"][0]["Summary"])
+        self.assertEqual(actual_yaml["description"], self.md["Packaging"][0]["Description"])
+        self.assertEqual(actual_yaml["confinement"], self.md["Packaging"][0]["Confinement"])
+        self.assertEqual(actual_yaml["grade"], self.md["Packaging"][0]["Grade"])
+        self.assertEqual(1, len(actual_yaml["apps"].keys()))
+        self.assertTrue(self.md["Packaging"][0]["Apps"][0]["Name"] in actual_yaml["apps"].keys())
+        self.assertEqual(self.md["Packaging"][0]["Apps"][0]["Command"],
                 actual_yaml["apps"][self.md["Packaging"][0]["Apps"][0]["Name"]]["command"])
 
     def test_cmake_lists_lib(self):
@@ -110,7 +110,7 @@ class TestPackage(unittest.TestCase):
         expected_cmake_lists_txt = expected_cmake_lists_txt + "project(" + self.md["Packaging"][1]["Name"] + ")\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "install(FILES ${libs} DESTINATION lib)"
-        assert (expected_cmake_lists_txt == actual_cmake_lists_txt)
+        self.assertEqual(expected_cmake_lists_txt, actual_cmake_lists_txt)
 
     def test_cmake_lists_headers(self):
         actual_cmake_lists_txt = Package.make_cmake_lists_for_snap_part(self.md["Packaging"][2])
@@ -118,7 +118,7 @@ class TestPackage(unittest.TestCase):
         expected_cmake_lists_txt = expected_cmake_lists_txt + "project(" + self.md["Packaging"][2]["Name"] + ")\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "install(DIRECTORY " + self.md["Packaging"][2][
             "HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
-        assert (expected_cmake_lists_txt == actual_cmake_lists_txt)
+        self.assertEqual(expected_cmake_lists_txt, actual_cmake_lists_txt)
 
     @patch("subprocess.Popen", autospec=True)
     def test_make_snap(self, mock_popen):

@@ -98,7 +98,7 @@ class TestPackageInstaller(unittest.TestCase):
         md = self.installer.get_installed_md(TestPackageInstaller.TEST_PACKAGE, TestPackageInstaller.TEST_VERSION)
         mock_isdir.assert_called_with(self.config[
                                           "PackageCacheRoot"] + "/" + TestPackageInstaller.TEST_PACKAGE + "/" + TestPackageInstaller.TEST_VERSION)
-        assert (md == TestPackageInstaller.TEST_MD)
+        self.assertEqual(TestPackageInstaller.TEST_MD, md)
 
     @patch("os.path.isfile", return_value=True)
     @patch("os.path.isdir", return_value=False)

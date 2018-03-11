@@ -35,7 +35,7 @@ class TestBuild(unittest.TestCase):
         r = MockDependencyResolver(None, None)
         mock_resolver.side_effect = [r]
         self.builder.bootstrap()
-        assert (len(r.invocations["bfs"]) == 1)
+        self.assertEqual(len(r.invocations["bfs"]), 1)
 
     @patch("os.getcwd", return_value="CWD")
     @patch("os.chdir", return_value=None)
@@ -133,4 +133,4 @@ class TestBuild(unittest.TestCase):
         isdir_calls = [call(self.config["BuildFolder"]), call(self.config["LocalPackageCache"])]
 
         mock_isdir.assert_has_calls(isdir_calls, any_order=True)
-        assert (not mock_rmtree.called)
+        self.assertFalse(mock_rmtree.called)

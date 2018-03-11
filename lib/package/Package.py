@@ -77,7 +77,6 @@ class Package:
         if install_target == "lib":
             if "LibName" not in snap_part_conf:
                 raise PackageException("A lib part type needs a LibName parameter in packaging information.")
-            lib_name = snap_part_conf["LibName"]
             cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
             cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
             cmake_str = cmake_str + "install(FILES ${libs} DESTINATION lib)"
@@ -86,7 +85,6 @@ class Package:
                 raise PackageException("Need a headers folder to create a header based snap-part.")
             if "HeadersDest" not in snap_part_conf:
                 raise PackageException("Need a headers folder to create a header based snap-part.")
-            folder = snap_part_conf["HeadersSource"]
             cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
             cmake_str = cmake_str + "install(DIRECTORY " + snap_part_conf[
                 "HeadersDest"] + " DESTINATION headers USE_SOURCE_PERMISSIONS)"
@@ -132,7 +130,7 @@ class Package:
             cwd = os.getcwd()
             os.chdir(temp_folder)
             p = subprocess.Popen(["snapcraft"])
-            o, e = p.communicate()
+            p.communicate()
             if not p.returncode == 0:
                 self.logger.error("Building snap failed.")
             else:
@@ -159,7 +157,7 @@ class Package:
 
         # Find the assoiated library
         if not os.path.isdir(self.conf["BuildFolder"]):
-            raise Package(
+            raise PackageException(
                 "Could not find build folder while trying to build snap part (lib). Make sure the code is built.")
         lib_path = Package.recursive_file_search(self.conf["BuildFolder"], snap_part_conf["LibName"])
         if not lib_path:

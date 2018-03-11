@@ -78,11 +78,11 @@ class TestDependencyResolver(unittest.TestCase):
         self.dep = DependencyResolver(self.config, self.logger)
 
     def test_url_gen(self):
-        assert ("https://s3.amazonaws.com/" +
+        self.assertEqual("https://s3.amazonaws.com/" +
                 TestDependencyResolver.TEST_BKT + "/" +
                 TestDependencyResolver.TEST_PKG["Package"] + "/" +
                 TestDependencyResolver.TEST_PKG["Version"] + "/" +
-                TestDependencyResolver.TEST_PKG["Package"] + ".tar" ==
+                TestDependencyResolver.TEST_PKG["Package"] + ".tar",
                 self.dep.s3_url(TestDependencyResolver.TEST_PKG["Package"], TestDependencyResolver.TEST_PKG["Version"]))
 
     def test_extract_deps(self):
@@ -95,7 +95,7 @@ class TestDependencyResolver(unittest.TestCase):
 
         assert (len(expected) == len(extracted))
         for pkg in expected:
-            assert pkg in extracted
+            self.assertTrue(pkg in extracted)
 
     """
     Test plan:
@@ -116,9 +116,9 @@ class TestDependencyResolver(unittest.TestCase):
         dep_test = DependencyResolver(self.config, self.logger)
         dep_test.bfs()
 
-        assert (len(dep_test.dependency_list) == 5)
-        assert ({"Package": "a", "Version": "0.0"} in dep_test.dependency_list)
-        assert ({"Package": "b", "Version": "0.1"} in dep_test.dependency_list)
-        assert ({"Package": "c", "Version": "0.0"} in dep_test.dependency_list)
-        assert ({"Package": "d", "Version": "1.0"} in dep_test.dependency_list)
-        assert ({"Package": "e", "Version": "0.0"} in dep_test.dependency_list)
+        self.assertEqual(5, len(dep_test.dependency_list))
+        self.assertTrue({"Package": "a", "Version": "0.0"} in dep_test.dependency_list)
+        self.assertTrue({"Package": "b", "Version": "0.1"} in dep_test.dependency_list)
+        self.assertTrue({"Package": "c", "Version": "0.0"} in dep_test.dependency_list)
+        self.assertTrue({"Package": "d", "Version": "1.0"} in dep_test.dependency_list)
+        self.assertTrue({"Package": "e", "Version": "0.0"} in dep_test.dependency_list)

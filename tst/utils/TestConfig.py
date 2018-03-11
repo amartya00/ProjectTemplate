@@ -30,6 +30,7 @@ class TestConfig(unittest.TestCase):
         fp_read_conf_file = MockFilePointer(read_text=json.dumps(TestConfig.CONF_FILE_CONTENT, indent=4))
         mock_open.side_effect = [fp_write_conf_file, fp_read_conf_file]
         conf = Config()
+        self.assertTrue(conf)
 
         isdir_calls = [call(Config.DEFAULT_CONF_FOLDER)]
         makedirs_calls = [call(Config.DEFAULT_CONF_FOLDER)]
@@ -39,7 +40,7 @@ class TestConfig(unittest.TestCase):
         mock_isdir.assert_has_calls(isdir_calls)
         mock_makedirs.assert_has_calls(makedirs_calls)
 
-        assert (len(fp_write_conf_file.invocations["write"]) == 1)
+        self.assertEqual(1, len(fp_write_conf_file.invocations["write"]))
         assert (fp_write_conf_file.invocations["write"][0] == json.dumps(Config.DEFAULT_CONF, indent=4))
 
     @patch("lib.utils.Config.Log", return_value=MockLog())
@@ -50,7 +51,7 @@ class TestConfig(unittest.TestCase):
         fp = MockFilePointer(read_text=json.dumps(TestConfig.CONF_FILE_CONTENT, indent=4))
         mock_open.side_effect = [fp]
         conf = Config("TEST_LOG")
-        assert (TestConfig.CONF_FILE_CONTENT == conf.conf)
+        self.assertEqual(TestConfig.CONF_FILE_CONTENT, conf.conf)
 
     @patch("lib.utils.Config.Log", return_value=MockLog())
     @patch("os.path.isdir", return_value=True)
@@ -63,11 +64,11 @@ class TestConfig(unittest.TestCase):
         fp = MockFilePointer(read_text=json.dumps(partial_conf, indent=4))
         mock_open.side_effect = [fp]
         conf = Config("TEST_LOG")
-        assert (partial_conf["BucketName"] == conf.conf["BucketName"])
-        assert (partial_conf["ProgramName"] == conf.conf["ProgramName"])
-        assert (partial_conf["LogFile"] == conf.conf["LogFile"])
-        assert (Config.DEFAULT_CONF["PackageCacheRoot"] == conf.conf["PackageCacheRoot"])
-        assert (Config.DEFAULT_CONF["Level"] == conf.conf["Level"])
+        self.assertEqual(partial_conf["BucketName"], conf.conf["BucketName"])
+        self.assertEqual(partial_conf["ProgramName"], conf.conf["ProgramName"])
+        self.assertEqual(partial_conf["LogFile"], conf.conf["LogFile"])
+        self.assertEqual(Config.DEFAULT_CONF["PackageCacheRoot"], conf.conf["PackageCacheRoot"])
+        self.assertEqual(Config.DEFAULT_CONF["Level"], conf.conf["Level"])
 
     @patch("lib.utils.Config.Log", return_value=MockLog())
     @patch("os.path.isdir", return_value=True)
@@ -77,4 +78,4 @@ class TestConfig(unittest.TestCase):
         fp = MockFilePointer(read_text=json.dumps(TestConfig.CONF_FILE_CONTENT, indent=4))
         mock_open.side_effect = [fp]
         conf = Config()
-        assert (TestConfig.CONF_FILE_CONTENT == conf.conf)
+        self.assertEqual(TestConfig.CONF_FILE_CONTENT, conf.conf)

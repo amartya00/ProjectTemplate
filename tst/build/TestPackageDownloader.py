@@ -29,7 +29,7 @@ class TestPackageDownloader(unittest.TestCase):
     def test_prep_folders_cache_exists(self, isdir, makedirs):
         self.p.prep_folders()
         isdir.assert_called_with(self.conf["PackageCacheRoot"])
-        assert not makedirs.called
+        self.assertFalse(makedirs.called)
 
     @patch("os.makedirs", return_va1lue=None)
     @patch("os.path.isdir", return_value=False)
@@ -63,7 +63,7 @@ class TestPackageDownloader(unittest.TestCase):
         fp = MockTarfilePointer()
         tfl.side_effect = [fp]
         self.p.extract_package(TestPackageDownloader.TEST_PKG, TestPackageDownloader.TEST_VERSION)
-        assert (len(fp.invocations["extractall"]) == 1)
-        assert (fp.invocations["extractall"][0] == self.conf[
+        self.assertEqual(1, len(fp.invocations["extractall"]))
+        self.assertEqual(fp.invocations["extractall"][0], self.conf[
             "PackageCacheRoot"] + "/" + TestPackageDownloader.TEST_PKG + "/" + TestPackageDownloader.TEST_VERSION)
-        assert (len(fp.invocations["close"]) == 1)
+        self.assertEqual(1, len(fp.invocations["close"]))
