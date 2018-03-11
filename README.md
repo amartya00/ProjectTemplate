@@ -1,6 +1,7 @@
 # Build helper
 ## Status
 [![codecov](https://codecov.io/gh/amartya00/ProjectTemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/amartya00/ProjectTemplate)
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
 ## About
 This utility automates a lot of the build process while developing code. This tool leverages [cmake](https://cmake.org/) and [snapcraft](https://snapcraft.io/) to help work on your code and abstracting away all the headache of building, resolving dependencies and packaging.
