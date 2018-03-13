@@ -3,5 +3,5 @@
 
 int main() {
     int x = b(99) + a(99);
-    return 10;
+    return x%10;
 }

@@ -1,7 +1,15 @@
+"""
+Available utilities:
+* trace_lib_deps
+"""
+
+import argparse
+import json
 import logging
 import os
 import subprocess
 import sys
+import traceback
 from logging import handlers
 
 sys.dont_write_bytecode = True
@@ -63,7 +71,7 @@ def wget(url, dest):
 def ldd(libpath):
     libs = []
     p = subprocess.Popen(["ldd", libpath], stdout=subprocess.PIPE)
-    o, e = p.communicate()
+    o = p.communicate()[0].decode("UTF-8")
     for l in o.split("\n"):
         if l.strip() == "":
             continue
@@ -74,10 +82,12 @@ def ldd(libpath):
             elif temp[0].strip().lower() == "statically linked":
                 continue
             elif len(temp) == 2:
-                libs.append((temp[0].split(" ")[0].strip(), temp[1].strip().split(" ")[0]))
+                libs.append((temp[0].split(" ")[0].strip(), temp[1].strip().split(" ")[0],
+                             os.path.realpath(temp[1].strip().split(" ")[0])))
             else:
-                libs.append((temp[0].split("/")[-1].split(" ")[0].strip(), temp[0].split(" ")[0].strip()))
-        return libs
+                libs.append((temp[0].split("/")[-1].split(" ")[0].strip(), temp[0].split(" ")[0].strip(),
+                             os.path.realpath(temp[0].split(" ")[0].strip())))
+    return libs
 
 
 def recursiely_gather_libs(input_dict, library, logger):
@@ -85,7 +95,7 @@ def recursiely_gather_libs(input_dict, library, logger):
     for d in deps:
         if d[0] not in input_dict.keys():
             logger.info("[INFO] Gathering dependencies for: " + d[0])
-            input_dict[d[0]] = d[1]
+            input_dict[d[0]] = {"ReferedFile": d[1], "ActualFile": d[2]}
             recursiely_gather_libs(input_dict, d[1], logger)
 
 
@@ -102,3 +112,45 @@ def recursive_file_search(root, fname):
         if os.path.isdir(os.path.join(root, f)):
             return recursive_file_search(os.path.join(root, f), fname)
     return None
+
+
+def getopts(cmd_line_args, config):
+    subcommands = ["trace_lib_deps"]
+    logger = config.logger
+    parser = argparse.ArgumentParser(prog="Utils", description=__doc__, usage="utils -c <subcommand> [options]",
+                                     formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument("-f", "--libfile", help="Full path of the target library.")
+    parser.add_argument("-c", "--subcommand", help="The subcommand.")
+    args = parser.parse_args(cmd_line_args)
+
+    sub_command = None
+    lib_file = None
+
+    if args.subcommand:
+        sub_command = args.subcommand
+
+    if args.libfile:
+        lib_file = args.libfile
+
+    if not sub_command:
+        print("\n\n")
+        print("Subcommand expected. Available subcommands are: " + str(subcommands))
+        parser.print_help()
+        print("\n\n")
+        sys.exit(1)
+
+    if sub_command == "trace_lib_deps":
+        if not lib_file:
+            print("Lib file required: ")
+            parser.print_help()
+            sys.exit(1)
+        libs = {}
+        try:
+            recursiely_gather_libs(libs, lib_file, logger)
+            print(json.dumps(libs, indent=4))
+        except Exception as e:
+            logger.error(str(e))
+            logger.error("\nStacktrace:\n--------------------------------------")
+            logger.error(traceback.format_exc())
+            logger.error("--------------------------------------\n\n")
+            sys.exit(1)

@@ -102,7 +102,7 @@ class TestPackage(unittest.TestCase):
         self.assertEqual(1, len(actual_yaml["apps"].keys()))
         self.assertTrue(self.md["Packaging"][0]["Apps"][0]["Name"] in actual_yaml["apps"].keys())
         self.assertEqual(self.md["Packaging"][0]["Apps"][0]["Command"],
-                actual_yaml["apps"][self.md["Packaging"][0]["Apps"][0]["Name"]]["command"])
+                         actual_yaml["apps"][self.md["Packaging"][0]["Apps"][0]["Name"]]["command"])
 
     def test_cmake_lists_lib(self):
         actual_cmake_lists_txt = Package.make_cmake_lists_for_snap_part(self.md["Packaging"][1])

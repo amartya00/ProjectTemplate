@@ -79,11 +79,12 @@ class TestDependencyResolver(unittest.TestCase):
 
     def test_url_gen(self):
         self.assertEqual("https://s3.amazonaws.com/" +
-                TestDependencyResolver.TEST_BKT + "/" +
-                TestDependencyResolver.TEST_PKG["Package"] + "/" +
-                TestDependencyResolver.TEST_PKG["Version"] + "/" +
-                TestDependencyResolver.TEST_PKG["Package"] + ".tar",
-                self.dep.s3_url(TestDependencyResolver.TEST_PKG["Package"], TestDependencyResolver.TEST_PKG["Version"]))
+                         TestDependencyResolver.TEST_BKT + "/" +
+                         TestDependencyResolver.TEST_PKG["Package"] + "/" +
+                         TestDependencyResolver.TEST_PKG["Version"] + "/" +
+                         TestDependencyResolver.TEST_PKG["Package"] + ".tar",
+                         self.dep.s3_url(TestDependencyResolver.TEST_PKG["Package"],
+                                         TestDependencyResolver.TEST_PKG["Version"]))
 
     def test_extract_deps(self):
         extracted = DependencyResolver.extract_deps(TestDependencyResolver.TEST_PKG)

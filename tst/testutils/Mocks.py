@@ -126,11 +126,11 @@ class MockDependencyResolver:
         }
 
     def s3_url(self, package_name, package_version):
-        return None
+        pass
 
     @staticmethod
     def extract_deps(md):
-        return None
+        pass
 
     def bfs(self):
         self.invocations["bfs"].append(None)

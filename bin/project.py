@@ -6,6 +6,7 @@ For more help opn individual commands, please type project <command> --help.
 Available sub-commands are:
 * build
 * package
+* utils
 """
 
 import os
@@ -17,6 +18,7 @@ sys.dont_write_bytecode = True
 from lib.utils.Config import Config
 from lib.build.Build import Build
 from lib.package.Package import Package
+from lib.utils import Utils
 
 USAGE = "USAGE: project <command> <options>"
 AVAILABLE_COMMANDS = ["build", "package", "help"]
@@ -36,6 +38,8 @@ def main():
         Build.getopts(args, config)
     elif command == "package":
         Package.getopts(args, config)
+    elif command == "utils":
+        Utils.getopts(args, config)
     elif command == "help":
         print("\n\n")
         print(__doc__)
