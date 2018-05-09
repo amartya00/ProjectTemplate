@@ -79,6 +79,7 @@ class Package:
                 raise PackageException("A lib part type needs a LibName parameter in packaging information.")
             cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
             cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
+            cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.a*)\n"
             cmake_str = cmake_str + "install(FILES ${libs} DESTINATION lib)"
         elif install_target == "headers":
             if "HeadersSource" not in snap_part_conf:

@@ -109,6 +109,7 @@ class TestPackage(unittest.TestCase):
         expected_cmake_lists_txt = "cmake_minimum_required(VERSION 3.0)\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "project(" + self.md["Packaging"][1]["Name"] + ")\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
+        expected_cmake_lists_txt = expected_cmake_lists_txt + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.a*)\n"
         expected_cmake_lists_txt = expected_cmake_lists_txt + "install(FILES ${libs} DESTINATION lib)"
         self.assertEqual(expected_cmake_lists_txt, actual_cmake_lists_txt)
 
