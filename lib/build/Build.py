@@ -61,8 +61,8 @@ class Build:
         p = subprocess.Popen(["cmake", self.config["ProjectDir"], "-DPACKAGE_CACHE=" + self.packagecache],
                              stdout=subprocess.PIPE)
         o, e = p.communicate()
-        self.logger.info(str(o))
-        self.logger.info(str(e))
+        self.logger.info(o)
+        self.logger.info(e)
         os.chdir(cwd)
         return self
 
@@ -83,8 +83,8 @@ class Build:
         os.chdir(self.build_folder)
         p = subprocess.Popen(["make", "test"], stdout=subprocess.PIPE)
         o, e = p.communicate()
-        self.logger.info(str(o))
-        self.logger.info(str(e))
+        self.logger.info(o)
+        self.logger.info(e)
         os.chdir(cwd)
         return self
 

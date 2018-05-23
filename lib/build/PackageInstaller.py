@@ -46,11 +46,11 @@ class PackageInstaller:
         out, err = p.communicate()
         exit_code = True if p.returncode == 0 else False
         if not exit_code:
-            self.logger.error(str(err))
+            self.logger.error(err)
             self.logger.error("CMAKE command failed with error code " + str(p.returncode) + " !")
             raise PackageInstallerException("CMAKE command exited with code " + str(p.returncode))
         else:
-            self.logger.info(str(out))
+            self.logger.info(out)
 
         # MAKE
         self.logger.info("Calling make.")
@@ -58,11 +58,11 @@ class PackageInstaller:
         out, err = p.communicate()
         exit_code = True if p.returncode == 0 else False
         if not exit_code:
-            self.logger.error(str(err))
+            self.logger.error(err)
             self.logger.error("MAKE command failed with error code " + str(p.returncode) + " !")
             raise PackageInstallerException("MAKE command exited with code " + str(p.returncode))
         else:
-            self.logger.info(str(out))
+            self.logger.info(out)
 
         # MAKE INSTALL
         self.logger.info("Calling make install.")
@@ -70,11 +70,11 @@ class PackageInstaller:
         out, err = p.communicate()
         exit_code = True if p.returncode == 0 else False
         if not exit_code:
-            self.logger.error(str(err))
+            self.logger.error(err)
             self.logger.error("MAKE INSTALL command failed with error code " + str(p.returncode) + " !")
             raise PackageInstallerException("MAKE INSTALL command exited with code " + str(p.returncode))
         else:
-            self.logger.info(str(out))
+            self.logger.info(out)
         self.logger.info("Successfully installed package " + package_name + "/" + package_version + " to " + local_dest)
         os.chdir(self.cwd)
 

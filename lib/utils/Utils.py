@@ -34,23 +34,30 @@ class Log:
         fh.setFormatter(fmt)
         self.log.addHandler(fh)
 
+    @staticmethod
+    def extract_msg(msg):
+        try:
+            return msg.decode("utf-8")
+        except:
+            return str(msg)
+
     def get_logger(self):
         return self.log
 
     def info(self, msg):
-        for l in msg.split("\n"):
+        for l in Log.extract_msg(msg).split("\n"):
             self.log.info(l)
 
     def error(self, msg):
-        for l in msg.split("\n"):
+        for l in Log.extract_msg(msg).split("\n"):
             self.log.error(l)
 
     def warn(self, msg):
-        for l in msg.split("\n"):
+        for l in Log.extract_msg(msg).split("\n"):
             self.log.warning(l)
 
     def debug(self, msg):
-        for l in msg.split("\n"):
+        for l in Log.extract_msg(msg).split("\n"):
             self.log.debug(l)
 
 
