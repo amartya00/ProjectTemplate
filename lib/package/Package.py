@@ -147,29 +147,31 @@ class Package:
 
     def make_snap_part_lib(self, snap_part_conf):
         self.logger.info("Building snap part library.")
-        if not "LibName" in snap_part_conf:
+        if "LibNames" not in snap_part_conf:
             raise PackageException("Expecting 'LibName' to be present in snap part conf.")
-        if not "Name" in snap_part_conf:
+        if "Name" not in snap_part_conf:
             raise PackageException("Expecting 'Name' to be present in snap part conf.")
         # Create the CmakeLists.txt
         cmake_lists_txt = Package.make_cmake_lists_for_snap_part(snap_part_conf)
         self.logger.info("Snap lib CMakeLists.txt: ")
         self.logger.info(cmake_lists_txt)
 
-        # Find the assoiated library
+        # Find the associated library
         if not os.path.isdir(self.conf["BuildFolder"]):
             raise PackageException(
                 "Could not find build folder while trying to build snap part (lib). Make sure the code is built.")
-        lib_path = Package.recursive_file_search(self.conf["BuildFolder"], snap_part_conf["LibName"])
-        if not lib_path:
-            raise PackageException("Could not find library " + snap_part_conf["LibName"] + " in build folder.")
-        with tarfile.open(os.path.join(self.conf["BuildFolder"], snap_part_conf["Name"] + ".tar"), "w") as tfp:
-            tfp.add(lib_path, arcname=snap_part_conf["LibName"])
-            with tempfile.NamedTemporaryFile(mode="w") as cmake_file:
-                cmake_file.write(cmake_lists_txt)
-                cmake_file.flush()
-                tfp.add(cmake_file.name, arcname="CMakeLists.txt")
-            tfp.add("md.json", arcname="md.json")
+        for libname in snap_part_conf["LibNames"]:
+            self.logger.info("Searching for library " + libname)
+            lib_path = Package.recursive_file_search(self.conf["BuildFolder"], libname)
+            if not lib_path:
+                raise PackageException("Could not find library " + libname + " in build folder.")
+            with tarfile.open(os.path.join(self.conf["BuildFolder"], snap_part_conf["Name"] + ".tar"), "w") as tfp:
+                tfp.add(lib_path, arcname=libname)
+                with tempfile.NamedTemporaryFile(mode="w") as cmake_file:
+                    cmake_file.write(cmake_lists_txt)
+                    cmake_file.flush()
+                    tfp.add(cmake_file.name, arcname="CMakeLists.txt")
+                tfp.add("md.json", arcname="md.json")
         self.logger.info("Done building snap part lib.")
         return self
 

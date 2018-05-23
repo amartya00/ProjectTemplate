@@ -156,7 +156,7 @@ Let's observe the ```md.json``` file.
       "Name": "b",
       "Type": "snap-part",
       "PartType": "lib",
-      "LibName": "libb.so"
+      "LibNames": ["libb.so"]
     },
     {
       "Name": "b-headers",

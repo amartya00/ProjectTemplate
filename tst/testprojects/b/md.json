@@ -18,7 +18,7 @@
       "Name": "b",
       "Type": "snap-part",
       "PartType": "lib",
-      "LibName": "libb.so"
+      "LibNames": ["libb.so"]
     },
     {
       "Name": "b-headers",
