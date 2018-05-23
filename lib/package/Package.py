@@ -75,8 +75,8 @@ class Package:
         install_target = snap_part_conf["PartType"]
         cmake_str = "cmake_minimum_required(VERSION 3.0)\n"
         if install_target == "lib":
-            if "LibName" not in snap_part_conf:
-                raise PackageException("A lib part type needs a LibName parameter in packaging information.")
+            if "LibNames" not in snap_part_conf:
+                raise PackageException("A lib part type needs a LibNames parameter in packaging information.")
             cmake_str = cmake_str + "project(" + snap_part_conf["Name"] + ")\n"
             cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.so*)\n"
             cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/*.a*)\n"

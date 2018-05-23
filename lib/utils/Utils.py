@@ -67,7 +67,7 @@ def wget(url, dest):
     p = subprocess.Popen(["wget", url, "-O", dest], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     err, out = p.communicate()
     exit_code = True
-    if "ERROR" in out:
+    if "ERROR" in str(out):
         err = out
         out = ""
         exit_code = False
