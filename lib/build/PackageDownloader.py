@@ -7,12 +7,7 @@ Configuration parameters needed:
 
 import os
 import shutil
-import sys
 import tarfile
-
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
-sys.dont_write_bytecode = True
-
 from lib.utils.Utils import wget
 
 

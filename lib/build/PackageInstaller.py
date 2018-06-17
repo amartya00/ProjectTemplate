@@ -8,10 +8,6 @@ Configuration parameters needed:
 import json
 import os
 import subprocess
-import sys
-
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
-sys.dont_write_bytecode = True
 
 
 class PackageInstallerException(Exception):

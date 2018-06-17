@@ -1,12 +1,7 @@
 import io
 import json
-import os
-import sys
 import unittest
 from unittest.mock import patch
-
-sys.dont_write_bytecode = True
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
 from lib.build.DependencyResolver import DependencyResolver
 

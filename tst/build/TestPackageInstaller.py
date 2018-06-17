@@ -1,11 +1,6 @@
 import json
-import os
 import subprocess
-import sys
 import unittest
-
-sys.dont_write_bytecode = True
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../")
 
 from unittest.mock import patch, call
 from tst.testutils.Mocks import MockLog, MockProcess, MockFilePointer

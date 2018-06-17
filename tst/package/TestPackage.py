@@ -42,7 +42,7 @@ class TestPackage(unittest.TestCase):
                     "Name": "TEST_SNAP_PART_LIB",
                     "Type": "snap-part",
                     "PartType": "lib",
-                    "LibName": "liba.so"
+                    "LibNames": ["liba.so"]
                 },
                 {
                     "Name": "TEST_SNAP_PART_HEADER",

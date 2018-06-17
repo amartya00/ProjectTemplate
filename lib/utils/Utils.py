@@ -12,8 +12,6 @@ import sys
 import traceback
 from logging import handlers
 
-sys.dont_write_bytecode = True
-
 
 class Log:
     def __init__(self, config):
