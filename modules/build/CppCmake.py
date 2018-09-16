@@ -22,6 +22,7 @@ class CppCmake:
             os.chdir(build_folder)
             p = subprocess.Popen(["cmake", root, "-DPACKAGE_CACHE=" + package_cache], stdout=subprocess.PIPE)
             o, e = p.communicate()
+            logger.info("Running command: cmake " + root + " -DPACKAGE_CACHE=" + package_cache)
             logger.info(o)
             logger.info(e)
             os.chdir(current)

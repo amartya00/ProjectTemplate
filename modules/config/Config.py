@@ -15,7 +15,8 @@ class Config:
     DEFAULT_CONFIG = {
         "GlobalPackageCache": os.path.join(os.environ["HOME"], ".packagecache"),
         "LogFile": os.path.join(os.environ["HOME"], ".bob", "bob.log"),
-        "Level": "INFO"
+        "Level": "INFO",
+        "ProgramName": "Bob"
     }
 
     def __init__(self, project_root):
@@ -62,7 +63,8 @@ class Config:
             raise ConfigException("Malformed md.json file: " + str(e) + ".")
         self.logger = Log(self.config)
         self.config["Logger"] = self.logger
-        self.config["LocalPackageCache"] = os.path.join(project_root, ".packageceche")
+        self.config["LocalPackageCache"] = os.path.join(project_root, ".packagecache")
+        self.config["BuildDir"] = os.path.join(project_root, "build")
 
     def get_config(self):
         return self.config

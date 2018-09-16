@@ -12,7 +12,8 @@ class TestConfig (unittest.TestCase):
         self.config = {
             "GlobalPackageCache": os.path.join(os.environ["HOME"], ".packagecache"),
             "LogFile": os.path.join(os.environ["HOME"], ".bob", "bob.log"),
-            "Level": "INFO"
+            "Level": "INFO",
+            "ProgramName": "Bob"
         }
         self.md = {
             "Name": "TestPackage",

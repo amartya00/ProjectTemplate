@@ -54,7 +54,7 @@ class PackageDownloader:
             p = subprocess.Popen(["wget", url, "-O", dest], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             err, out = p.communicate()
             exit_code = True
-            if "ERROR" in str(out):
+            if "ERROR" in str(out) or p.returncode != 0:
                 err = out
                 out = ""
                 exit_code = False
@@ -87,16 +87,22 @@ class PackageDownloader:
         try:
             self.prep_cache()
             source_type = source_info["Type"]
-            dest = os.path.join(self.global_package_cache, package_name, str(package_version), package_name + ".tar")
+            dest_folder = os.path.join(self.global_package_cache, package_name, str(package_version))
+            dest = os.path.join(dest_folder, package_name + ".tar")
             if os.path.isfile(dest):
                 self.logger.info("Package " + package_name + "/" + str(package_version ) + " already downloaded. Skipping.")
                 return self
+            else:
+                if not os.path.isdir(dest_folder):
+                    os.makedirs(dest_folder)
             self.logger.info("Downloading package " + package_name + " : " + str(package_version) + " of type " + source_type)
             if source_type.lower() == "url":
                 url = source_info["Url"] + "/" + package_name + "/" + str(package_version) + "/" + package_name + ".tar"
                 err, out, exit_code = PackageDownloader.wget(url, dest)
                 if not exit_code:
-                    raise PackageDownloaderException("Failed to download package " + url + " . " + err + ".")
+                    raise PackageDownloaderException("Failed to download package " + url + ".")
+                self.logger.info(out)
+                self.logger.info(err)
                 self.logger.info("Downloaded " + url + ".")
             elif source_type.lower() == "s3":
                 bucket = source_info["Bucket"]

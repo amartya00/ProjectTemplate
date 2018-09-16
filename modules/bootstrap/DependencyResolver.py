@@ -49,7 +49,10 @@ class DependencyResolver:
 
     def bfs(self):
         try:
-            next_frontier = self.gather_initial_deps()
+            try:
+                next_frontier = self.gather_initial_deps()
+            except KeyError as e:
+                raise DependencyResolverException("Malformed dependency: " + str(e))
             visited = {}
             for dep in next_frontier:
                 visited[str(dep)] = dep

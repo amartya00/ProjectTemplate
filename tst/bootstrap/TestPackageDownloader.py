@@ -19,6 +19,7 @@ class TestPackageDownloader (unittest.TestCase):
                 "Type": "URL",
                 "Url": "https://my_ftp_site/folder"
             },
+            "ProgramName": "Bob",
             "Logger": MockLog()
         }
         self.package_list = [
@@ -52,14 +53,19 @@ class TestPackageDownloader (unittest.TestCase):
     @patch("builtins.open", autospec=True)
     def test_packages_downloaded_happy_case(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
         # Mocks
-        wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_FAILURE)
+        wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         wget_2 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         tarfile_open = MockTarfilePointer()
         file_open = MockFilePointer()
 
         # Argument captors
         isdir_calls = [
-            call(self.config_obj["GlobalPackageCache"])
+            call(self.config_obj["GlobalPackageCache"]),
+            call(os.path.join(self.config_obj["GlobalPackageCache"], "A", "1.0")),
+            call(self.config_obj["GlobalPackageCache"]),
+            call(os.path.join(self.config_obj["GlobalPackageCache"], "B", "2.0")),
+            call(self.config_obj["GlobalPackageCache"]),
+            call(os.path.join(self.config_obj["GlobalPackageCache"], "C", "3.0"))
         ]
         makedirs_calls = [
             call(self.config_obj["GlobalPackageCache"])
@@ -116,7 +122,7 @@ class TestPackageDownloader (unittest.TestCase):
             )
         ]
 
-        mock_isdir.side_effect = [False, True, True]
+        mock_isdir.side_effect = [False, True, True, True, True, True]
         mock_tarfile.side_effect = [tarfile_open, tarfile_open, tarfile_open]
         mock_file.side_effect = [file_open]
         mock_popen.side_effect = [wget_1, wget_2]
@@ -180,7 +186,7 @@ class TestPackageDownloader (unittest.TestCase):
     @patch("os.path.isfile", autospec=True)
     def test_not_downloaded_on_existing_package(self, mock_isfile, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
         # Mocks
-        wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_FAILURE)
+        wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         wget_2 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         tarfile_open = MockTarfilePointer()
         file_open = MockFilePointer()
