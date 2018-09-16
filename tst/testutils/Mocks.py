@@ -1,53 +1,14 @@
-import sys
+from botocore.exceptions import ClientError
 
-sys.dont_write_bytecode = True
-
-
-class MockPackageInstaller:
-    def __init__(self, config, logger, package_map):
-        self.package_map = package_map
-        self.invocations = {
-            "install": [],
-            "get_installed_md": []
-        }
-
-    def install(self, package_name, package_version):
-        self.invocations["install"].append((package_name, package_version))
-
-    def get_installed_md(self, package_name, package_version):
-        self.invocations["get_installed_md"].append((package_name, package_version))
-        return self.package_map[(package_name, package_version)]
-
-
-class MockPackageDownloader:
-    def __init__(self, config, logger):
-        self.invocations = {
-            "get_package": [],
-            "download_package": [],
-            "extract_package": [],
-            "clear_cache": [],
-            "prep_folders": []
-        }
-
-    def prep_folders(self):
-        pass
-
-    def download_package(self, package_name, package_version):
-        pass
-
-    def extract_package(self, package_name, package_version):
-        pass
-
-    def get_package(self, package_name, package_version):
-        self.invocations["get_package"].append((package_name, package_version))
-
-    def clear_cache(self, package_list):
-        pass
+from modules.bootstrap.PackageDownloader import PackageDownloaderException
+from modules.bootstrap.PackageInstaller import PackageInstallerException
+from modules.bootstrap.DependencyResolver import DependencyResolverException
+from modules.build.CppCmake import BuildException
 
 
 class MockLog:
-    def __init__(self):
-        pass
+    def __init__(self, config={}):
+        self.config = config
 
     def get_logger(self):
         pass
@@ -65,23 +26,6 @@ class MockLog:
         pass
 
 
-class MockTarfilePointer:
-    def __init__(self):
-        self.invocations = {
-            "extractall": [],
-            "close": []
-        }
-
-    def extractall(self, path):
-        self.invocations["extractall"].append(path)
-
-    def close(self):
-        self.invocations["close"].append(None)
-
-    def __enter__(self):
-        pass
-
-
 class MockProcess:
     def __init__(self, out, err, exit_code):
         self.out = out
@@ -95,8 +39,54 @@ class MockProcess:
         return self.out, self.err
 
 
+class MockS3Client:
+    def __init__(self):
+        self.invocations = []
+        self.raise_client_error = False
+
+    def set_up_client_error(self):
+        self.raise_client_error = True
+
+    def download_fileobj(self, bucket, key, file_obj):
+        if self.raise_client_error:
+            raise ClientError(
+                error_response={
+                    "Error": {
+                        "Code": "CLIENT_ERROR"
+                    }
+                },
+                operation_name="download-fileobj"
+            )
+        self.invocations.append((bucket, key, file_obj))
+
+
+class MockTarfilePointer:
+    def __init__(self):
+        self.invocations = {
+            "extractall": [],
+            "close": []
+        }
+        self.exception = False
+
+    def set_exception(self):
+        self.exception = True
+
+    def extractall(self, path):
+        if self.exception:
+            raise OSError("Error")
+        self.invocations["extractall"].append(path)
+
+    def close(self):
+        if self.exception:
+            raise OSError("Error")
+        self.invocations["close"].append(None)
+
+    def __enter__(self):
+        pass
+
+
 class MockFilePointer:
-    def __init__(self, read_text):
+    def __init__(self, read_text=""):
         self.read_text = read_text
         self.invocations = {
             "read": [],
@@ -117,21 +107,101 @@ class MockFilePointer:
         self.invocations["write"].append(write_text)
 
 
-class MockDependencyResolver:
-    def __init__(self, config, logger):
-        self.config = config
-        self.logger = logger
+class MockPackageDownloader:
+    def __init__(self):
+        self.invocations = []
+        self.throws = False
+
+    def set_throws(self):
+        self.throws = True
+
+    def unset_throws(self):
+        self.throws = False
+
+    def download_and_extract(self, package_list):
+        if self.throws:
+            raise PackageDownloaderException()
+        self.invocations.append(package_list[:])
+
+
+class MockPackageInstaller:
+    def __init__(self, collected_dependencies=[]):
+        self.collected_dependencies = collected_dependencies
+        self.invocations = []
+        self.invocation_count = -1
+        self.throws = False
+
+    def set_throws(self):
+        self.throws = True
+
+    def unset_throws(self):
+        self.throws = False
+
+    def install_packages(self, package_list):
+        if self.throws:
+            raise PackageInstallerException()
+        self.invocations.append(package_list[:])
+        self.invocation_count = self.invocation_count + 1
+        return self.collected_dependencies[self.invocation_count]
+
+
+class MockConfig:
+    def __init__(self, config={}):
+        self.config=config
+
+    def get_config(self):
+        return self.config
+
+
+class MockBuildSystem:
+    def __init__(self):
         self.invocations = {
-            "bfs": []
+            "Test": 0,
+            "Build": 0,
+            "Clean": 0
         }
+        self.build_throws = False
+        self.test_throws = False
 
-    def s3_url(self, package_name, package_version):
-        pass
+    def set_build_throws(self):
+        self.build_throws = True
 
-    @staticmethod
-    def extract_deps(md):
-        pass
+    def set_test_throws(self):
+        self.test_throws = True
+
+    def unset_build_throws(self):
+        self.build_throws = False
+
+    def unset_test_throws(self):
+        self.test_throws = False
+
+    def build(self):
+        if self.build_throws:
+            raise BuildException()
+        self.invocations["Build"] = self.invocations["Build"] + 1
+
+    def run_tests(self):
+        if self.test_throws:
+            raise BuildException()
+        self.invocations["Test"] = self.invocations["Test"] + 1
+
+    def clean(self):
+        self.invocations["Clean"] = self.invocations["Clean"] + 1
+
+
+class MockDependencyResolver:
+    def __init__(self):
+        self.invocations = 0
+        self.throws = False
+
+    def set_throws(self):
+        self.throws = True
+
+    def unset_throws(self):
+        self.throws = False
 
     def bfs(self):
-        self.invocations["bfs"].append(None)
-        return self
+        if self.throws:
+            raise DependencyResolverException()
+        self.invocations = self.invocations + 1
+

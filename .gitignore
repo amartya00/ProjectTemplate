@@ -1,9 +1,5 @@
-build/
-.idea/
 venv/
-.packagecache/
+cover/
 .idea/
-*.pyc
 .coverage
-coverage.xml
-
+*.pyc

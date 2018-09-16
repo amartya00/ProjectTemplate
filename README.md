@@ -155,7 +155,7 @@ Let's observe the ```md.json``` file.
     {
       "Name": "b",
       "Type": "snap-part",
-      "PartType": "lib",
+      "PartType": modules,
       "LibNames": ["libb.so"]
     },
     {
