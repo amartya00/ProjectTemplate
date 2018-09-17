@@ -3,7 +3,9 @@ from botocore.exceptions import ClientError
 from modules.bootstrap.PackageDownloader import PackageDownloaderException
 from modules.bootstrap.PackageInstaller import PackageInstallerException
 from modules.bootstrap.DependencyResolver import DependencyResolverException
+from modules.package.SnapPart import SnapPartException
 from modules.build.CppCmake import BuildException
+from modules.package.Package import PackageException
 
 
 class MockLog:
@@ -64,7 +66,8 @@ class MockTarfilePointer:
     def __init__(self):
         self.invocations = {
             "extractall": [],
-            "close": []
+            "close": [],
+            "add": []
         }
         self.exception = False
 
@@ -76,12 +79,18 @@ class MockTarfilePointer:
             raise OSError("Error")
         self.invocations["extractall"].append(path)
 
+    def add(self, filename, arcname=None):
+        self.invocations["add"].append((filename, arcname))
+
     def close(self):
         if self.exception:
             raise OSError("Error")
         self.invocations["close"].append(None)
 
     def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
 
@@ -205,3 +214,56 @@ class MockDependencyResolver:
             raise DependencyResolverException()
         self.invocations = self.invocations + 1
 
+
+class MockTemporaryFilePointer:
+    def __init__(self, name):
+        self.name = name
+        self.invocations = {
+            "write": [],
+            "flush": 0
+        }
+
+    def write(self, text):
+        self.invocations["write"].append(text)
+
+    def flush(self):
+        self.invocations["flush"] = self.invocations["flush"] + 1
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
+class MockSnapPart:
+    def __init__(self, conf={}):
+        self.conf = conf
+        self.throws = False
+
+    def set_throws(self):
+        self.throws = True
+
+    def unset_throws(self):
+        self.throws = False
+
+    def generate_snap_part(self):
+        if self.throws:
+            raise SnapPartException()
+
+
+class MockPackage:
+    def __init__(self):
+        self.invocations = 0
+        self.throws = False
+
+    def set_throws(self):
+        self.throws = True
+
+    def unset_throws(self):
+        self.throws = False
+
+    def package(self):
+        self.invocations = self.invocations + 1
+        if self.throws:
+            raise PackageException()

@@ -46,12 +46,13 @@ class TestPackageDownloader (unittest.TestCase):
         ]
         self.downloader = PackageDownloader(self.config_obj)
 
+    @patch("os.path.isfile", return_value=False)
     @patch("os.path.isdir", autospec=True)
     @patch("os.makedirs", return_value=None)
     @patch("subprocess.Popen", autospec=True)
     @patch("tarfile.open", autospec=True)
     @patch("builtins.open", autospec=True)
-    def test_packages_downloaded_happy_case(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
+    def test_packages_downloaded_happy_case(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir, mock_isfile):
         # Mocks
         wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         wget_2 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
@@ -68,7 +69,19 @@ class TestPackageDownloader (unittest.TestCase):
             call(os.path.join(self.config_obj["GlobalPackageCache"], "C", "3.0"))
         ]
         makedirs_calls = [
-            call(self.config_obj["GlobalPackageCache"])
+            call(self.config_obj["GlobalPackageCache"]),
+            call(os.path.join(
+                self.config_obj["GlobalPackageCache"],
+                self.package_list[0]["Name"],
+                self.package_list[0]["Version"])),
+            call(os.path.join(
+                self.config_obj["GlobalPackageCache"],
+                self.package_list[1]["Name"],
+                self.package_list[1]["Version"])),
+            call(os.path.join(
+                self.config_obj["GlobalPackageCache"],
+                self.package_list[2]["Name"],
+                self.package_list[2]["Version"]))
         ]
         wget_url_1 = "/".join([
             self.config_obj["PackageSource"]["Url"],
@@ -122,7 +135,7 @@ class TestPackageDownloader (unittest.TestCase):
             )
         ]
 
-        mock_isdir.side_effect = [False, True, True, True, True, True]
+        mock_isdir.side_effect = [False, False, True, False, True, False]
         mock_tarfile.side_effect = [tarfile_open, tarfile_open, tarfile_open]
         mock_file.side_effect = [file_open]
         mock_popen.side_effect = [wget_1, wget_2]
@@ -136,34 +149,38 @@ class TestPackageDownloader (unittest.TestCase):
         self.assertEqual((self.package_list[1]["PackageSource"]["Bucket"], s3_key, file_open), self.downloader.s3_client.invocations[0])
         self.assertEqual(tarfile_opens, tarfile_open.invocations["extractall"])
 
+    @patch("os.path.isfile", return_value=False)
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs", return_value=None)
     @patch("subprocess.Popen", autospec=True)
     @patch("tarfile.open", autospec=True)
     @patch("builtins.open", autospec=True)
-    def test_exception_on_failed_wget(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
+    def test_exception_on_failed_wget(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir, mock_isfile):
         wget_1 = MockProcess("ERR", "ERROR occured", TestPackageDownloader.EXIT_FAILURE)
         wget_2 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         mock_popen.side_effect = [wget_1, wget_2]
         self.assertRaises(PackageDownloaderException, self.downloader.download_and_extract, self.package_list)
 
+    @patch("os.path.isfile", return_value=True)
     @patch("os.path.isdir", return_value=False)
     @patch("os.makedirs", autospec=True)
     @patch("subprocess.Popen", autospec=True)
     @patch("tarfile.open", autospec=True)
     @patch("builtins.open", autospec=True)
-    def test_exception_on_fail_create_cache(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
+    def test_exception_on_fail_create_cache(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir, mock_isfile):
         mock_makedirs.side_effect = OSError()
         self.assertRaises(PackageDownloaderException, self.downloader.download_and_extract, self.package_list)
 
+    @patch("os.path.isfile", autospec=True)
     @patch("os.path.isdir", return_value=True)
     @patch("os.makedirs", return_value=None)
     @patch("subprocess.Popen", autospec=True)
     @patch("tarfile.open", autospec=True)
     @patch("builtins.open", autospec=True)
     @patch("boto3.client", return_value=MockS3Client())
-    def test_exception_on_failed_s3_download(self, mock_s3, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
+    def test_exception_on_failed_s3_download(self, mock_s3, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir, mock_isfile):
         # Mocks
+        mock_isfile.side_effect = [True, False, True]
         wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_FAILURE)
         wget_2 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
         tarfile_open = MockTarfilePointer()
@@ -321,5 +338,24 @@ class TestPackageDownloader (unittest.TestCase):
     def test_exception_on_absent_wget(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir):
         mock_popen.side_effect = OSError()
         self.assertRaises(PackageDownloaderException, self.downloader.download_and_extract, self.package_list)
+
+    @patch("os.path.isfile", return_value=False)
+    @patch("os.path.isdir", return_value=True)
+    @patch("os.makedirs", return_value=None)
+    @patch("subprocess.Popen", autospec=True)
+    @patch("tarfile.open", autospec=True)
+    @patch("builtins.open", autospec=True)
+    def test_exception_on_extract_fail(self, mock_file, mock_tarfile, mock_popen, mock_makedirs, mock_isdir, mock_isfile):
+        wget_1 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
+        wget_2 = MockProcess("ERR", "OUT", TestPackageDownloader.EXIT_SUCCESS)
+        mock_popen.side_effect = [wget_1, wget_2]
+
+        tarfile_pointer = MockTarfilePointer()
+        mock_tarfile.side_effect = [tarfile_pointer]
+        tarfile_pointer.set_exception()
+        self.assertRaises(PackageDownloaderException, self.downloader.download_and_extract, self.package_list)
+
+
+
 
 

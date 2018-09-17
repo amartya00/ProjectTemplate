@@ -39,6 +39,25 @@ class TestDependencyResolver (unittest.TestCase):
         ]
         self.assertEqual(sorted(expected_dependency_closure, key=lambda x: x["Name"]), sorted(actual_dependency_closure, key=lambda x: x["Name"]))
 
+    @patch("modules.bootstrap.DependencyResolver.PackageInstaller", autospec=True)
+    @patch("modules.bootstrap.DependencyResolver.PackageDownloader", autospec=True)
+    def test_exception_on_bad_md(self, mock_package_downloader, mock_package_installers):
+        returned_dependencies = [
+            {"A": {"Name": "A", "Version": "1.0"}, "B": {"Name": "B", "Version": "2.0"}},
+            {"A": {"Name": "A", "Version": "1.0"}, "C": {"Name": "C", "Version": "3.0"}},
+            {"A": {"Name": "B", "Version": "2.0"}, "C": {"Name": "C", "Version": "3.0"}}
+        ]
+        mock_package_downloader.side_effect = [MockPackageDownloader()]
+        mock_package_installers.side_effect = [MockPackageInstaller(returned_dependencies)]
+        self.config_obj = {
+            "Dependencies": [{"Name": "D1", "Version": "1.0"}],
+            "BuildDeps": [{"Name": "D2", "Version": "1.0"}],
+            "RuntimeDeps": [{"Name": "D3", "Version": "1.0"}],
+            "TestDeps": [{"Name": "D2", "Version": "1.0"}],
+            "Logger": MockLog()
+        }
+        self.resolver = DependencyResolver(self.config_obj)
+
     def test_exception_on_package_downloader_exception(self):
         self.resolver.downloader.set_throws()
         self.assertRaises(DependencyResolverException, self.resolver.bfs)

@@ -3,6 +3,7 @@ import os
 from modules.config.Config import ConfigException, Config
 from modules.build.CppCmake import BuildException, CppCmake
 from modules.bootstrap.DependencyResolver import DependencyResolverException, DependencyResolver
+from modules.package.Package import PackageException, Package
 
 
 class WorkflowException (Exception):
@@ -35,9 +36,10 @@ class Workflow:
         except BuildException as e:
             raise WorkflowException("Could not configure build because: " + str(e))
 
-        # Initialize other things
+        # Initialize other stuff
         try:
             self.resolver = DependencyResolver(self.config_obj)
+            self.package = Package(self.config_obj)
         except DependencyResolverException as e:
             raise WorkflowException("Could not initialize dependency resolver because: " + str(e))
 
@@ -52,12 +54,16 @@ class Workflow:
                 self.builder.run_tests()
             elif step_name == "Clean":
                 self.builder.clean()
+            elif step_name == "Package":
+                self.package.package()
             else:
                 raise WorkflowException("Invalid step name.")
         except DependencyResolverException as e:
             raise WorkflowException("Could not resolve dependencies because: " + str(e))
         except BuildException as e:
             raise WorkflowException("Could not resolve build / test because: " + str(e))
+        except PackageException as e:
+            raise WorkflowException("Could not package because: " + str(e))
         self.logger.info("Finished executing step: " + step_name + ".")
 
     def run(self):

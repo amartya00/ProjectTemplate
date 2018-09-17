@@ -1,7 +1,7 @@
 import unittest
 
 from unittest.mock import patch
-from tst.testutils.Mocks import MockConfig, MockLog, MockBuildSystem, MockDependencyResolver
+from tst.testutils.Mocks import MockConfig, MockLog, MockBuildSystem, MockDependencyResolver, MockPackage
 
 from modules.config.Config import ConfigException
 from modules.build.CppCmake import BuildException
@@ -10,11 +10,12 @@ from modules.workflow.Workflow import WorkflowException, Workflow
 
 
 class TestWorkflow (unittest.TestCase):
+    @patch("modules.workflow.Workflow.Package", autospec=True)
     @patch("modules.workflow.Workflow.DependencyResolver", autospec=True)
     @patch("modules.workflow.Workflow.CppCmake", autospec=True)
     @patch("modules.workflow.Workflow.Config", autospec=True)
     @patch("os.getcwd", return_value="CWD")
-    def test_workflow_happy_case(self, mock_getcwd, mock_config, mock_build_system, mock_dependency_resolver):
+    def test_workflow_happy_case(self, mock_getcwd, mock_config, mock_build_system, mock_dependency_resolver, mock_pkg):
         config = {
             "Logger": MockLog(),
             "BuildSystem": "CppCmake"
@@ -27,6 +28,9 @@ class TestWorkflow (unittest.TestCase):
         resolver = MockDependencyResolver()
         mock_dependency_resolver.side_effect = [resolver]
 
+        package = MockPackage()
+        mock_pkg.side_effect = [package]
+
         w = Workflow()
         w.run()
 
@@ -34,6 +38,7 @@ class TestWorkflow (unittest.TestCase):
         self.assertEqual(1, builder.invocations["Build"])
         self.assertEqual(1, builder.invocations["Test"])
         self.assertEqual(0, builder.invocations["Clean"])
+        self.assertEqual(0, package.invocations)
 
     @patch("modules.workflow.Workflow.DependencyResolver", autospec=True)
     @patch("modules.workflow.Workflow.CppCmake", autospec=True)
@@ -54,11 +59,12 @@ class TestWorkflow (unittest.TestCase):
 
         self.assertRaises(WorkflowException, Workflow)
 
+    @patch("modules.workflow.Workflow.Package", autospec=True)
     @patch("modules.workflow.Workflow.DependencyResolver", autospec=True)
     @patch("modules.workflow.Workflow.CppCmake", autospec=True)
     @patch("modules.workflow.Workflow.Config", autospec=True)
     @patch("os.getcwd", return_value="CWD")
-    def test_single_step_happy_case(self, mock_getcwd, mock_config, mock_build_system, mock_dependency_resolver):
+    def test_single_step_happy_case(self, mock_getcwd, mock_config, mock_build_system, mock_dependency_resolver, mock_pkg):
         config = {
             "Logger": MockLog(),
             "BuildSystem": "CppCmake"
@@ -70,6 +76,8 @@ class TestWorkflow (unittest.TestCase):
 
         resolver = MockDependencyResolver()
         mock_dependency_resolver.side_effect = [resolver]
+        package = MockPackage()
+        mock_pkg.side_effect = [package]
 
         w = Workflow()
         w.execute_step("Bootstrap")
@@ -77,24 +85,35 @@ class TestWorkflow (unittest.TestCase):
         self.assertEqual(0, builder.invocations["Build"])
         self.assertEqual(0, builder.invocations["Test"])
         self.assertEqual(0, builder.invocations["Clean"])
+        self.assertEqual(0, package.invocations)
 
         w.execute_step("Build")
         self.assertEqual(1, resolver.invocations)
         self.assertEqual(1, builder.invocations["Build"])
         self.assertEqual(0, builder.invocations["Test"])
         self.assertEqual(0, builder.invocations["Clean"])
+        self.assertEqual(0, package.invocations)
 
         w.execute_step("Test")
         self.assertEqual(1, resolver.invocations)
         self.assertEqual(1, builder.invocations["Build"])
         self.assertEqual(1, builder.invocations["Test"])
         self.assertEqual(0, builder.invocations["Clean"])
+        self.assertEqual(0, package.invocations)
 
         w.execute_step("Clean")
         self.assertEqual(1, resolver.invocations)
         self.assertEqual(1, builder.invocations["Build"])
         self.assertEqual(1, builder.invocations["Test"])
         self.assertEqual(1, builder.invocations["Clean"])
+        self.assertEqual(0, package.invocations)
+
+        w.execute_step("Package")
+        self.assertEqual(1, resolver.invocations)
+        self.assertEqual(1, builder.invocations["Build"])
+        self.assertEqual(1, builder.invocations["Test"])
+        self.assertEqual(1, builder.invocations["Clean"])
+        self.assertEqual(1, package.invocations)
 
         self.assertRaises(WorkflowException, w.execute_step, "BogusStep")
 
@@ -134,11 +153,12 @@ class TestWorkflow (unittest.TestCase):
 
         self.assertRaises(WorkflowException, Workflow)
 
+    @patch("modules.workflow.Workflow.Package", autospec=True)
     @patch("modules.workflow.Workflow.DependencyResolver", autospec=True)
     @patch("modules.workflow.Workflow.CppCmake", autospec=True)
     @patch("modules.workflow.Workflow.Config", autospec=True)
     @patch("os.getcwd", return_value="CWD")
-    def test_exception_on_step_exception(self, mock_getcwd, mock_config, mock_build_system, mock_dependency_resolver):
+    def test_exception_on_step_exception(self, mock_getcwd, mock_config, mock_build_system, mock_dependency_resolver, mock_pkg):
         config = {
             "Logger": MockLog(),
             "BuildSystem": "CppCmake"
@@ -150,6 +170,9 @@ class TestWorkflow (unittest.TestCase):
 
         resolver = MockDependencyResolver()
         mock_dependency_resolver.side_effect = [resolver]
+
+        package = MockPackage()
+        mock_pkg.side_effect = [package]
 
         w = Workflow()
 
@@ -164,3 +187,10 @@ class TestWorkflow (unittest.TestCase):
         builder.set_test_throws()
         self.assertRaises(WorkflowException, w.run)
         builder.unset_test_throws()
+
+        package.set_throws()
+        self.assertRaises(WorkflowException, w.execute_step, "Package")
+        package.unset_throws()
+
+
+
