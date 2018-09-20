@@ -1,0 +1,34 @@
+{
+  "Name": "TestProject",
+  "Version": "0.0",
+  "BuildSystem": "CppCmake",
+  "PackageSource": {
+    "Type": "Url",
+    "Url": "https://s3.amazonaws.com/amartya00-service-artifacts"
+  },
+  "Dependencies": [
+    {
+      "Name": "a",
+      "Version": "0.1"
+    },
+    {
+      "Name": "a-headers",
+      "Version": "0.1"
+    }
+  ],
+  "Packaging": [
+    {
+      "Type": "SnapPart",
+      "PartType": "lib",
+      "LibNames": [
+        "liba.so"
+      ]
+    },
+    {
+      "Type": "SnapPart",
+      "PartType": "headers",
+      "HeadersSource": "headers",
+      "HeadersDest": "A"
+    }
+  ]
+}
