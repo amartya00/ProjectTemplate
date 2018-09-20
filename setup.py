@@ -25,7 +25,7 @@ setup(
         'Programming Language :: Python :: 3.6',
     ],
     packages=["modules", "modules.bootstrap", "modules.build", "modules.config", "modules.workflow"],
-    install_requires=["boto3"],
+    install_requires=["boto3", "botocore"],
     extras_require={
         'dev': [],
         'test': ["coverage"],
