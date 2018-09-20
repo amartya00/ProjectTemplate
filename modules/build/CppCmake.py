@@ -18,30 +18,28 @@ class CppCmake:
     @staticmethod
     def cmake(root, build_folder, package_cache, logger):
         try:
-            current = os.getcwd()
             os.chdir(build_folder)
             p = subprocess.Popen(["cmake", root, "-DPACKAGE_CACHE=" + package_cache], stdout=subprocess.PIPE)
             o, e = p.communicate()
             logger.info("Running command: cmake " + root + " -DPACKAGE_CACHE=" + package_cache)
             logger.info(o)
             logger.info(e)
-            os.chdir(current)
+            os.chdir(root)
         except OSError as e:
             raise BuildException(str(e))
 
     @staticmethod
-    def make(build_folder, args=[]):
+    def make(root, build_folder, args=[]):
         try:
-            current = os.getcwd()
             os.chdir(build_folder)
             p = subprocess.Popen(["make"] + args)
             p.communicate()
-            os.chdir(current)
+            os.chdir(root)
         except OSError as e:
             raise BuildException(str(e))
 
     def __init__(self, config_obj):
-        self.root = os.getcwd()
+        self.root = config_obj["ProjectRoot"]
         self.package_cache = config_obj["LocalPackageCache"]
         self.build_dir = config_obj["BuildDir"]
         self.logger = config_obj["Logger"]
@@ -54,13 +52,13 @@ class CppCmake:
             except OSError as e:
                 raise BuildException("Could not create build folder because " + str(e))
         CppCmake.cmake(self.root, self.build_dir, self.package_cache, self.logger)
-        CppCmake.make(self.build_dir)
+        CppCmake.make(self.root, self.build_dir)
 
     def run_tests(self):
         if not os.path.isdir(self.build_dir):
             self.logger.warn("Could not find build dir. Building first.")
             self.build()
-        CppCmake.make(self.build_dir, ["test"])
+        CppCmake.make(self.root, self.build_dir, ["test"])
 
     def clean(self):
         if os.path.isdir(self.build_dir):

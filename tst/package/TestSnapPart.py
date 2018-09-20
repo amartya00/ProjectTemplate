@@ -13,6 +13,7 @@ class TestSnapPart (unittest.TestCase):
         self.conf = {
             "Name": "TEST_PROJECT",
             "Version": "1.0",
+            "LocalPackageCache": "PACKAGE_CACHE",
             "ProjectRoot": "ROOT",
             "BuildFolder": "BUILD",
             "Logger": MockLog(),
@@ -246,3 +247,64 @@ class TestSnapPart (unittest.TestCase):
         conf = copy.deepcopy(self.conf)
         del conf["Logger"]
         self.assertRaises(SnapPartException, SnapPart, conf)
+
+    @patch("tarfile.open", autospec=True)
+    @patch("tempfile.NamedTemporaryFile", autospec=True)
+    @patch("os.path.isdir", autospec=True)
+    @patch("os.listdir", autospec=True)
+    def test_exception_on_headers_fail(self, mock_listdir, mock_isdir, mock_tmpfile, mock_tarfile):
+        conf = copy.deepcopy(self.conf)
+        conf["PartType"] = "headers"
+        conf["HeadersSource"] = "HEADERS_SRC"
+        conf["HeadersDest"] = "HEADERS_DEST"
+
+        mock_listdir.side_effect = [
+            ["MY_PROJECT_F1", "MY_PROJECT_F2", "CMakeLists.txt"],
+            [conf["HeadersSource"]]
+        ]
+
+        mock_isdir.side_effect = [
+            True,  # MY_PROJECT_F1
+            True  # headers
+        ]
+
+        cmake_tmpfile = MockTemporaryFilePointer("TEMP_CMAKE")
+        md_tmpfile = MockTemporaryFilePointer("TEMP_MD")
+        mock_tmpfile.side_effect = [cmake_tmpfile, md_tmpfile]
+
+        tfp = OSError()
+        mock_tarfile.side_effect = [tfp]
+
+        part_builder = SnapPart(conf)
+        self.assertRaises(SnapPartException, part_builder.generate_snap_part)
+
+    @patch("tarfile.open", autospec=True)
+    @patch("tempfile.NamedTemporaryFile", autospec=True)
+    @patch("os.path.isdir", autospec=True)
+    @patch("os.listdir", autospec=True)
+    def test_exception_on_lib_fail(self, mock_listdir, mock_isdir, mock_tmpfile, mock_tarfile):
+        conf = copy.deepcopy(self.conf)
+        conf["PartType"] = "lib"
+        conf["LibNames"] = ["lib1.jar", "lib2.jar"]
+
+        mock_listdir.side_effect = [
+            ["jars"],
+            conf["LibNames"]
+        ]
+
+        mock_isdir.side_effect = [
+            True,  # Build folder
+            True,  # MY_PROJECT_F1
+            False,  # lib1.jar
+            False  # lib2.jar
+        ]
+
+        cmake_tmpfile = MockTemporaryFilePointer("TEMP_CMAKE")
+        md_tmpfile = MockTemporaryFilePointer("TEMP_MD")
+        mock_tmpfile.side_effect = [cmake_tmpfile, md_tmpfile]
+
+        tfp = OSError()
+        mock_tarfile.side_effect = [tfp]
+
+        part_builder = SnapPart(conf)
+        self.assertRaises(SnapPartException, part_builder.generate_snap_part)

@@ -8,27 +8,29 @@
   },
   "Dependencies": [
     {
-      "Name": "a",
+      "Name": "a-headers",
       "Version": "0.1"
     },
     {
-      "Name": "a-headers",
+      "Name": "b-headers",
       "Version": "0.1"
     }
   ],
   "Packaging": [
     {
+      "Name": "test",
       "Type": "SnapPart",
       "PartType": "lib",
       "LibNames": [
-        "liba.so"
+        "libtest.so"
       ]
     },
     {
       "Type": "SnapPart",
       "PartType": "headers",
       "HeadersSource": "headers",
-      "HeadersDest": "A"
+      "HeadersDest": "test",
+      "Name": "test-headers"
     }
   ]
 }

@@ -42,6 +42,8 @@ class Config:
                 raise ConfigException("Could not read config file because " + str(e) + ".")
             except ValueError as e:
                 raise ConfigException("Malformed config file: " + str(e) + ".")
+        self.config["ProjectRoot"] = project_root
+        self.config["BuildFolder"] = os.path.join(project_root, "build")
 
         # Read `md.json`
         try:

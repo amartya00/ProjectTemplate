@@ -34,4 +34,4 @@ def execute_cmd():
             return True
         workflow.run()
     except WorkflowException as e:
-        print("[ERROR] Error occured " + str(e))
+        print("\n\n[ERROR] Error occured " + str(e))

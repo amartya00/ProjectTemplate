@@ -10,7 +10,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name="bob",
-    version="1.5",
+    version="1.6",
     description="A python based build system",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -24,7 +24,7 @@ setup(
         'License :: GPLV2',
         'Programming Language :: Python :: 3.6',
     ],
-    packages=["modules", "modules.bootstrap", "modules.build", "modules.config", "modules.workflow"],
+    packages=["modules", "modules.bootstrap", "modules.build", "modules.config", "modules.workflow", "modules.package"],
     install_requires=["boto3", "botocore"],
     extras_require={
         'dev': [],

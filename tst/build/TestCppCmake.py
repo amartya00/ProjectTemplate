@@ -13,6 +13,7 @@ class TestCppCmake (unittest.TestCase):
     @patch("os.getcwd", return_value="CWD")
     def setUp(self, mock_getcwd):
         self.config_obj = {
+            "ProjectRoot": "ROOT",
             "LocalPackageCache": "TEST_PACKAGE_CACHE",
             "BuildDir": "TEST_BUILD_DIR",
             "Logger": MockLog()
@@ -38,10 +39,10 @@ class TestCppCmake (unittest.TestCase):
         ]
         chdir_calls = [
             call(self.config_obj["BuildDir"]),
-            call("CWD")
+            call(self.config_obj["ProjectRoot"])
         ]
         popen_calls = [
-            call(["cmake", "CWD", "-DPACKAGE_CACHE=" + self.config_obj["LocalPackageCache"]],stdout=subprocess.PIPE),
+            call(["cmake", self.config_obj["ProjectRoot"], "-DPACKAGE_CACHE=" + self.config_obj["LocalPackageCache"]],stdout=subprocess.PIPE),
             call(["make"])
         ]
         mock_popen.side_effect = [p_cmake, p_make]
@@ -65,7 +66,7 @@ class TestCppCmake (unittest.TestCase):
         ]
         chdir_calls = [
             call(self.config_obj["BuildDir"]),
-            call("CWD")
+            call(self.config_obj["ProjectRoot"])
         ]
         popen_calls = [
             call(["make", "test"])
@@ -91,7 +92,7 @@ class TestCppCmake (unittest.TestCase):
         ]
         chdir_calls = [
             call(self.config_obj["BuildDir"]),
-            call("CWD")
+            call(self.config_obj["ProjectRoot"])
         ]
         popen_calls = [
             call(["make", "test"])
@@ -131,12 +132,12 @@ class TestCppCmake (unittest.TestCase):
         ]
         chdir_calls = [
             call(self.config_obj["BuildDir"]),
-            call("CWD"),
+            call(self.config_obj["ProjectRoot"]),
             call(self.config_obj["BuildDir"]),
-            call("CWD")
+            call(self.config_obj["ProjectRoot"])
         ]
         popen_calls = [
-            call(["cmake", "CWD", "-DPACKAGE_CACHE=" + self.config_obj["LocalPackageCache"]], stdout=subprocess.PIPE),
+            call(["cmake", self.config_obj["ProjectRoot"], "-DPACKAGE_CACHE=" + self.config_obj["LocalPackageCache"]], stdout=subprocess.PIPE),
             call(["make"]),
             call(["make", "test"])
         ]

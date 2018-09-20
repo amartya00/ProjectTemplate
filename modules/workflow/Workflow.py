@@ -1,4 +1,5 @@
 import os
+import traceback
 
 from modules.config.Config import ConfigException, Config
 from modules.build.CppCmake import BuildException, CppCmake
@@ -32,7 +33,7 @@ class Workflow:
             if build_system == "CppCmake":
                 self.builder = CppCmake(self.config_obj)
             else:
-                raise WorkflowException("Invalid build system: " + build_system)
+                raise WorkflowException("Invalid build system: " + str(build_system))
         except BuildException as e:
             raise WorkflowException("Could not configure build because: " + str(e))
 

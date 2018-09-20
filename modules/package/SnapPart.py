@@ -126,8 +126,9 @@ class SnapPart:
         contents = os.listdir(root)
         for entry in contents:
             full_path = os.path.join(root, entry)
-            if entry == headers_src:
-
+            if entry == os.path.basename(self.config["LocalPackageCache"]):
+                continue
+            elif entry == headers_src:
                 return os.path.join(root, entry)
             elif os.path.isdir(full_path):
                 retval = self.find_headers_source(full_path, headers_src)
@@ -147,7 +148,7 @@ class SnapPart:
         cmake_str = self.generate_cmake_lists()
         md_str = self.generate_meta_data()
 
-        archive_name = os.path.join(self.config["ProjectRoot"], self.config["Name"] + ".tar")
+        archive_name = os.path.join(self.config["BuildFolder"], self.config["Name"] + ".tar")
         with tarfile.open(archive_name, "w") as tfp:
             # Add cMakeLists.txt
             with tempfile.NamedTemporaryFile(mode="w") as cmake_file:
@@ -172,8 +173,14 @@ class SnapPart:
             raise SnapPartException("Expecting \"PartType\" parameter in snap part config.")
         part_type = self.config["PartType"]
         if part_type == "lib":
-            self.generate_archive_libs()
+            try:
+                self.generate_archive_libs()
+            except OSError as e:
+                raise (SnapPartException(str(e)))
         elif part_type == "headers":
-            self.generate_archive_headers()
+            try:
+                self.generate_archive_headers()
+            except OSError as e:
+                raise (SnapPartException(str(e)))
         else:
             raise SnapPartException("Invalid part type. Allowed values are:  \"lib\" and \"headers\".")
