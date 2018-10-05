@@ -51,7 +51,7 @@ class SnapPart:
             return retval
         except OSError as e:
             self.logger.error(str(e))
-            raise SnapPartException(e)
+            raise SnapPartException(str(e))
 
     def generate_meta_data(self):
         md = {

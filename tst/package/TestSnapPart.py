@@ -140,9 +140,8 @@ class TestSnapPart (unittest.TestCase):
     def test_exception_on_missing_lib_names(self):
         conf = copy.deepcopy(self.conf)
         conf["PartType"] = "lib"
-
         snap_part = SnapPart(conf)
-        self.assertRaises(SnapPartException, snap_part.generate_snap_part)
+        self.assertRaises(SnapPartException, snap_part.generate_cmake_lists)
 
     @patch("os.path.isdir", autospec=True)
     @patch("os.listdir", autospec=True)
@@ -217,9 +216,8 @@ class TestSnapPart (unittest.TestCase):
         conf = copy.deepcopy(self.conf)
         conf["PartType"] = "headers"
         conf["HeadersSource"] = "headers"
-
         snap_part = SnapPart(conf)
-        self.assertRaises(SnapPartException, snap_part.generate_snap_part)
+        self.assertRaises(SnapPartException, snap_part.generate_cmake_lists)
 
     @patch("os.path.isdir", autospec=True)
     @patch("os.listdir", autospec=True)
@@ -308,3 +306,21 @@ class TestSnapPart (unittest.TestCase):
 
         part_builder = SnapPart(conf)
         self.assertRaises(SnapPartException, part_builder.generate_snap_part)
+
+    @patch("os.listdir", autospec=True)
+    def test_exception_on_failed_gather_libs(self, mock_listdir):
+        mock_listdir.side_effect = OSError()
+        part = SnapPart(self.conf)
+        self.assertRaises(SnapPartException, part.gather_libs, "SRC", ["FILE1"])
+
+    @patch("os.listdir", autospec=True)
+    def test_exception_on_missing_headers(self, mock_listdir):
+        mock_listdir.side_effect = [
+            [self.conf["LocalPackageCache"]]
+        ]
+        conf = copy.deepcopy(self.conf)
+        conf["PartType"] = "headers"
+        conf["HeadersSource"] = "HEADERS_SRC"
+        conf["HeadersDest"] = "HEADERS_DEST"
+        part = SnapPart(conf)
+        self.assertRaises(SnapPartException, part.generate_archive_headers)

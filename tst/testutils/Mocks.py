@@ -267,3 +267,46 @@ class MockPackage:
         self.invocations = self.invocations + 1
         if self.throws:
             raise PackageException()
+
+
+class MockLogger:
+    def __init__(self):
+        self.handlers = []
+        self.level = None
+        self.infos = list()
+        self.debugs = []
+        self.warns = []
+        self.errors = []
+
+    def addHandler(self, handler):
+        self.handlers.append(handler)
+
+    def setLevel(self, level):
+        self.level = level
+
+    def info(self, msg):
+        self.infos.append(msg)
+
+    def debug(self, msg):
+        self.debugs.append(msg)
+
+    def warning(self, msg):
+        self.warns.append(msg)
+
+    def error(self, msg):
+        self.errors.append(msg)
+
+
+class MockWorkflow:
+    def __init__(self):
+        self.invocations = {
+            "Run": [],
+            "Step": []
+        }
+
+    def execute_step(self, step_name):
+        self.invocations["Step"].append(step_name)
+
+    def run(self):
+        self.invocations["Run"].append(None)
+

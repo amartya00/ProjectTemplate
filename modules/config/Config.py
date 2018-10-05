@@ -1,5 +1,6 @@
 import os
 import json
+import copy
 
 from modules.config.Log import Log
 
@@ -28,11 +29,11 @@ class Config:
                     os.makedirs(Config.ROOT)
                 with open(Config.CONFIG_FILE, "w") as fp:
                     fp.write(json.dumps(Config.DEFAULT_CONFIG))
-                self.config = Config.DEFAULT_CONFIG
+                self.config = copy.deepcopy(Config.DEFAULT_CONFIG)
             except OSError as e:
                 raise ConfigException("Failed to write new config file because " + str(e) + ".")
         else:
-            self.config = Config.DEFAULT_CONFIG
+            self.config = copy.deepcopy(Config.DEFAULT_CONFIG)
             try:
                 with open(Config.CONFIG_FILE, "r") as fp:
                     config = json.load(fp)
@@ -41,7 +42,9 @@ class Config:
             except OSError as e:
                 raise ConfigException("Could not read config file because " + str(e) + ".")
             except ValueError as e:
-                raise ConfigException("Malformed config file: " + str(e) + ".")
+                with open(Config.CONFIG_FILE, "w") as fp:
+                    fp.write(json.dumps(Config.DEFAULT_CONFIG))
+                self.config = copy.deepcopy(Config.DEFAULT_CONFIG)
         self.config["ProjectRoot"] = project_root
         self.config["BuildFolder"] = os.path.join(project_root, "build")
 

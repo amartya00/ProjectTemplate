@@ -90,12 +90,14 @@ class TestConfig (unittest.TestCase):
     @patch("builtins.open", autospec=True)
     @patch("os.path.isfile", autospec=True)
     @patch("os.path.isdir", return_value=False)
-    def test_exception_on_malformed_json(self, mock_isdir, mock_isfile, mock_open, mock_log):
+    def test_recovery_on_malformed_json(self, mock_isdir, mock_isfile, mock_open, mock_log):
         mock_isfile.side_effect = [True, True]
         mock_open.side_effect = [
-            MockFilePointer(read_text="Malformed meta-data")
+            MockFilePointer(read_text="Malformed meta-data"),
+            MockFilePointer(read_text=""),
+            MockFilePointer(read_text=json.dumps(self.md, indent=4))
         ]
-        self.assertRaises(ConfigException, Config, self.project_root)
+        Config(self.project_root)
 
     @patch("modules.config.Config.Log", return_value=MockLog())
     @patch("builtins.open", autospec=True)
@@ -121,7 +123,6 @@ class TestConfig (unittest.TestCase):
             OSError()
         ]
         self.assertRaises(ConfigException, Config, self.project_root)
-
 
     @patch("modules.config.Config.Log", return_value=MockLog())
     @patch("builtins.open", autospec=True)

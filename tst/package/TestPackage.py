@@ -73,6 +73,14 @@ class TestPackage (unittest.TestCase):
         self.assertRaises(PackageException, package.package)
 
     @patch("os.path.isdir", return_value=True)
+    def test_exception_on_missing_package_type(self, mock_isdir):
+        config = copy.deepcopy(self.config)
+        del config["Packaging"][0]["Type"]
+
+        package = Package(config)
+        self.assertRaises(PackageException, package.package)
+
+    @patch("os.path.isdir", return_value=True)
     @patch("modules.package.Package.SnapPart", autospec=True)
     def test_exception_on_snap_part_exception(self, mock_snap_part, mock_isdir):
         snap_part = MockSnapPart()
