@@ -11,3 +11,22 @@ Feature: CPP workflow
     Then I should have the build folder.
     And It should contain a file called test.tar .
     And It should contain a file called test-headers.tar .
+    And the test-headers.tar should contain the following files.
+        |Files         |
+        |CMakeLists.txt|
+        |md.json       |
+        |test          |
+        |test/test.h   |
+    And the test.tar should contain the following files.
+        |Files         |
+        |CMakeLists.txt|
+        |md.json       |
+        |libtest.so    |
+    And the md.json in the test.tar should contain the following dependencies:
+        |Name     |Version|
+        |a-headers|0.1    |
+        |b-headers|0.1    |
+    And the md.json in the test-headers.tar should contain the following dependencies:
+        |Name     |Version|
+        |a-headers|0.1    |
+        |b-headers|0.1    |

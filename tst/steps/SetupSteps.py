@@ -2,7 +2,7 @@ import tempfile
 import shutil
 import os
 
-from behave import given, when, then
+from behave import given
 from modules.workflow.Workflow import Workflow
 
 
@@ -16,6 +16,7 @@ def i_have_a_cpp_project_with_a_proper_md_json_file(context):
         source_dir,
         dest_dir
     )
+    context.data_dir = source_dir
     context.workflow = Workflow(project_root=dest_dir)
 
 

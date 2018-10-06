@@ -1,4 +1,4 @@
-from behave import given, when, then
+from behave import when
 
 
 @when("I run the c++ build workflow.")
