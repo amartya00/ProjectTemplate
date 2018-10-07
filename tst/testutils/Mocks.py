@@ -310,3 +310,28 @@ class MockWorkflow:
     def run(self):
         self.invocations["Run"].append(None)
 
+
+class MockTemporaryDirectory:
+    def __init__(self, folder_name: "str"):
+        self.name = folder_name
+
+    def __enter__(self):
+        return self.name
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
+class MockSnapCMake:
+    def __init__(self):
+        self.invocations = 0
+        self.throws = False
+
+    def package(self):
+        self.invocations = self.invocations + 1
+
+    def set_throws(self):
+        self.throws = True
+
+    def unset_throws(self):
+        self.throws = False

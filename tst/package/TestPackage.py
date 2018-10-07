@@ -4,7 +4,7 @@ import copy
 from unittest.mock import patch, call
 
 from modules.package.Package import PackageException, Package
-from tst.testutils.Mocks import MockLog, MockSnapPart
+from tst.testutils.Mocks import MockLog, MockSnapPart, MockSnapCMake
 
 
 class TestPackage (unittest.TestCase):
@@ -26,6 +26,10 @@ class TestPackage (unittest.TestCase):
                     "SnapPartType": "headers",
                     "HeadersSource": "myheaders2",
                     "HeadersDest": "destheaders2"
+                },
+                {
+                    "Type": "SnapCMake",
+                    "OtherStuff": "The mock does not care about them"
                 }
             ],
             "Dependencies": [],
@@ -40,16 +44,23 @@ class TestPackage (unittest.TestCase):
         }
 
     @patch("os.path.isdir", return_value=True)
+    @patch("modules.package.Package.SnapCMake", autospec=True)
     @patch("modules.package.Package.SnapPart", return_value=MockSnapPart())
-    def test_package_happy_case(self, mock_snap_part, mock_isdir):
-        package = Package(self.config)
-        package.package()
-
+    def test_package_happy_case(self, mock_snap_part, mock_snap_cmake, mock_isdir):
+        mock_snap_cmake_process = MockSnapCMake()
+        mock_snap_cmake.side_effect = [mock_snap_cmake_process]
         snap_part_calls = [
             call(self.config["Packaging"][0]),
             call(self.config["Packaging"][1])
         ]
+
+        package = Package(self.config)
+        package.package()
+
+        # Validate snap part calls
         mock_snap_part.assert_has_calls(snap_part_calls, any_order=False)
+        # Validate snap CMake calls
+        self.assertEquals(1, mock_snap_cmake_process.invocations)
 
         isdir_calls = [
             call(self.config["BuildFolder"])
