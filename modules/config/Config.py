@@ -28,7 +28,7 @@ class Config:
                 if not os.path.isdir(Config.ROOT):
                     os.makedirs(Config.ROOT)
                 with open(Config.CONFIG_FILE, "w") as fp:
-                    fp.write(json.dumps(Config.DEFAULT_CONFIG))
+                    fp.write(json.dumps(Config.DEFAULT_CONFIG, indent=4))
                 self.config = copy.deepcopy(Config.DEFAULT_CONFIG)
             except OSError as e:
                 raise ConfigException("Failed to write new config file because " + str(e) + ".")
@@ -43,7 +43,7 @@ class Config:
                 raise ConfigException("Could not read config file because " + str(e) + ".")
             except ValueError as e:
                 with open(Config.CONFIG_FILE, "w") as fp:
-                    fp.write(json.dumps(Config.DEFAULT_CONFIG))
+                    fp.write(json.dumps(Config.DEFAULT_CONFIG, indent=4))
                 self.config = copy.deepcopy(Config.DEFAULT_CONFIG)
         self.config["ProjectRoot"] = project_root
         self.config["BuildFolder"] = os.path.join(project_root, "build")

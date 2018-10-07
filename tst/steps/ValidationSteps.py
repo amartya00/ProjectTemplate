@@ -17,6 +17,15 @@ def it_should_contain_a_file(context, file_name):
     assert_true(os.path.isfile(os.path.join(build_dir, file_name)))
 
 
+@then("It should contain a file with prefix {prefix} and suffix {suffix} .")
+def it_should_contain_a_file_with_prefix_and_suffix(context, prefix, suffix):
+    build_dir = os.path.join(context.temp_dir.name, "data", "build")
+    found = False
+    for f in os.listdir(build_dir):
+        if f.startswith(prefix) and f.endswith(suffix):
+            found = True
+    assert_true(found)
+
 @then("the {file_name} should contain the following files.")
 def the_file_name_should_contain_the_expected_files(context, file_name):
     all_files = []

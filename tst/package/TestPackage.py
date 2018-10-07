@@ -12,6 +12,7 @@ class TestPackage (unittest.TestCase):
         self.config = {
             "Logger": MockLog(),
             "LocalPackageCache": "PACKAGE_CACHE",
+            "GlobalPackageCache": "GLOBAL_CACHE",
             "ProjectRoot": "ROOT",
             "BuildFolder": "BUILD",
             "Packaging": [

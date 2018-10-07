@@ -47,36 +47,39 @@ class SnapCMake:
             raise SnapCMakeException("Missing configuration: " + str(e))
 
     def generate_snappy_yaml(self):
-        self.logger.info("Creating snappy yaml.")
-        # Package metadata
-        yaml_str = "name: " + self.config["Name"] + "\n"
-        yaml_str = yaml_str + "version: " + "'" + self.config["Version"] + "'\n"
-        yaml_str = yaml_str + "summary: " + self.config["Summary"] + "\n"
-        yaml_str = yaml_str + "grade: " + self.config["Grade"] + "\n"
-        yaml_str = yaml_str + "confinement: " + self.config["Confinement"] + "\n"
-        yaml_str = yaml_str + "description: " + self.config["Description"] + "\n\n"
-        yaml_str = yaml_str + "apps:\n"
-        for a in self.config["Apps"]:
-            yaml_str = yaml_str + "  " + a["Name"] + ":\n"
-            yaml_str = yaml_str + "    command: " + a["Command"] + "\n\n"
+        try:
+            self.logger.info("Creating snappy yaml.")
+            # Package metadata
+            yaml_str = "name: " + self.config["Name"] + "\n"
+            yaml_str = yaml_str + "version: " + "'" + self.config["Version"] + "'\n"
+            yaml_str = yaml_str + "summary: " + self.config["Summary"] + "\n"
+            yaml_str = yaml_str + "grade: " + self.config["Grade"] + "\n"
+            yaml_str = yaml_str + "confinement: " + self.config["Confinement"] + "\n"
+            yaml_str = yaml_str + "description: " + self.config["Description"] + "\n\n"
+            yaml_str = yaml_str + "apps:\n"
+            for a in self.config["Apps"]:
+                yaml_str = yaml_str + "  " + a["Name"] + ":\n"
+                yaml_str = yaml_str + "    command: " + a["Command"] + "\n\n"
 
-        # Dependencies
-        yaml_str = yaml_str + "parts:\n"
-        for d in self.generate_dependencies():
-            package_name = d["Name"]
-            package_version = d["Version"]
-            yaml_str = yaml_str + "  " + package_name + ":\n"
-            # Plugin will always be cmake
+            # Dependencies
+            yaml_str = yaml_str + "parts:\n"
+            for d in self.generate_dependencies():
+                package_name = d["Name"]
+                package_version = d["Version"]
+                yaml_str = yaml_str + "  " + package_name + ":\n"
+                # Plugin will always be cmake
+                yaml_str = yaml_str + "    plugin: cmake\n"
+                yaml_str = yaml_str + "    source: " + self.get_package_path(
+                    package_name,
+                    package_version) + "\n\n"
+            yaml_str = yaml_str + "  " + self.config["Name"] + ":\n"
             yaml_str = yaml_str + "    plugin: cmake\n"
-            yaml_str = yaml_str + "    source: " + self.get_package_path(
-                package_name,
-                package_version) + "\n\n"
-        yaml_str = yaml_str + "  " + self.config["Name"] + ":\n"
-        yaml_str = yaml_str + "    plugin: cmake\n"
-        yaml_str = yaml_str + "    source: " + self.config["ProjectRoot"] + "\n"
-        yaml_str = yaml_str + "    configflags: [-DPACKAGE_CACHE=" + self.config["LocalPackageCache"] + "]\n\n"
-        self.logger.info(yaml_str)
-        return yaml_str
+            yaml_str = yaml_str + "    source: " + self.config["ProjectRoot"] + "\n"
+            yaml_str = yaml_str + "    configflags: [-DPACKAGE_CACHE=" + self.config["LocalPackageCache"] + "]\n\n"
+            self.logger.info(yaml_str)
+            return yaml_str
+        except KeyError as e:
+            raise SnapCMakeException("Missing config params: " + str(e))
 
     def package(self):
         self.logger.info("Building snap.")

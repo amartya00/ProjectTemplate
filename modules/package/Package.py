@@ -19,6 +19,7 @@ class Package:
             step["ProjectRoot"] = self.config["ProjectRoot"]
             step["BuildFolder"] = self.config["BuildFolder"]
             step["LocalPackageCache"] = self.config["LocalPackageCache"]
+            step["GlobalPackageCache"] = self.config["GlobalPackageCache"]
             if "Dependencies" in self.config:
                 step["Dependencies"] = self.config["Dependencies"]
             if "RuntimeDeps" in self.config:

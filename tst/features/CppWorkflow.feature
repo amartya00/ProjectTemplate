@@ -11,6 +11,7 @@ Feature: CPP workflow
     Then I should have the build folder.
     And It should contain a file called test.tar .
     And It should contain a file called test-headers.tar .
+    And It should contain a file with prefix myapp and suffix .snap .
     And the test-headers.tar should contain the following files.
         |Files         |
         |CMakeLists.txt|

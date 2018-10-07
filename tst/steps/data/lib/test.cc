@@ -13,6 +13,6 @@ namespace Test {
 }
 
 
-    int main() {
-        Test::printMessage(2, 3);
-    }
+int main() {
+    Test::printMessage(2, 3);
+}
