@@ -6,7 +6,24 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/064fff2537d14417a2fb2a83fc4e900f)](https://www.codacy.com/app/amartya00/ProjectTemplate?utm_source=github.com&utm_medium=referral&utm_content=amartya00/ProjectTemplate&utm_campaign=Badge_Coverage)
 
 ## About
-This utility automates a lot of the build process while developing code. This tool leverages [cmake](https://cmake.org/) and [snapcraft](https://snapcraft.io/) to help work on your code and abstracting away all the headache of building, resolving dependencies and packaging.
+### TL;DR
+  - Tool resolves dependencies.
+  - Tool also packages application as a []snap](https://snapcraft.io/).
+  - Tool save you time and make you happy.
+
+### Long version
+Did you try to build a project and spend hours building its dependencies? Then spend a couple more trying to cook a docker image or EC2 AMI trying to create a deployable environment for your code? If yes, then continue reading...
+
+Most programming languages have their own dependency management systems. Java has Maven, Python has pip. There is no standardized one for c++. Also, what if you code in multiple languages and have a lot of private dependencies that you do not care to upload to the programming language specific repositories?
+
+I faced these problems. So to help me reduce the time spent bootstrapping and focus more on coding, and to teach myself python with some interesting project, I started to develop this tool. 
+
+I package up the dependencies that I want to use (programming language agnostic) into tar bundles and upload them to some remote file storage. Then when I want to use 'em, my tool downloads them and bootstraps them, so that the build system can then use them. 
+
+Then when I am done, this tool will also package the final product into a [snap](https://snapcraft.io/) if I want to deploy it somewhere. So there, I did not spend hours bootstrapping my project, and the deployable artifact being a snap can run almost anywhere. provided you packaged it properly.  
+
+The downloading and bootstrapping of the dependencies is generic and should be same across programming languages. Variations 
+ [cmake](https://cmake.org/) and [snapcraft](https://snapcraft.io/) to help work on your code and abstracting away all the headache of building, resolving dependencies and packaging.
 
 ## Overview of workflow
 This tool currently revolves around a specific workflow. I develop code in c++ that needs to be linked to libraries and needs to find headers to build. All the software packages compatible with this have a ```md.json``` file containing a list of dependencies and build parameters. Below is a list of its capabilities. I have explained some terms after that.
