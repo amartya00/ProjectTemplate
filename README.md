@@ -1,4 +1,4 @@
-# Build helper
+# **Bob**
 ## Status
 [![codecov](https://codecov.io/gh/amartya00/ProjectTemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/amartya00/ProjectTemplate)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
@@ -6,183 +6,105 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/064fff2537d14417a2fb2a83fc4e900f)](https://www.codacy.com/app/amartya00/ProjectTemplate?utm_source=github.com&utm_medium=referral&utm_content=amartya00/ProjectTemplate&utm_campaign=Badge_Coverage)
 
 ## About
-This utility automates a lot of the build process while developing code. This tool leverages [cmake](https://cmake.org/) and [snapcraft](https://snapcraft.io/) to help work on your code and abstracting away all the headache of building, resolving dependencies and packaging.
 
-## Overview of workflow
-This tool currently revolves around a specific workflow. I develop code in c++ that needs to be linked to libraries and needs to find headers to build. All the software packages compatible with this have a ```md.json``` file containing a list of dependencies and build parameters. Below is a list of its capabilities. I have explained some terms after that.
+Bob is a tool to help you quickly get from source code to installable packages.
 
-* Resolve the entire dependency graph for your project.
-* Download all the required dependencies and install them in a local folder where your ```CMakeLists.txt``` can find them.
-* Automatically generate ```snapcraft.yaml``` if you are packaging your code into a snap and build the snap.
-* Build snap parts (libraries and headers). 
+### TL;DR
+  - Tool resolves dependencies.
+  - Tool also packages application as a [**snap**](https://snapcraft.io/).
+  - Tool save you time and make you happy.
 
-The detailed description of the development process is listed in the **details** section.
+### Long version
+Did you try to build a project and spend hours building its dependencies? Then spend a couple more trying to cook a docker image or EC2 AMI trying to create a deployable environment for your code? If yes, then continue reading...
 
-## Building and installing.
-## Requirements
-* Python 3
-* Nosetests 3
+Most programming languages have their own dependency management systems. Java has Maven, Python has pip. There is no standardized one for c++. Also, what if you code in multiple languages and have a lot of private dependencies that you do not care to upload to the programming language specific repositories?
 
-## Commands to build and install
-```shell
-$ git clone https://github.com/amartya00/ProjectTemplate.git
-$ cd ProjectTemplate
-$ nosetests-3.4 tst/ --nocapture -v
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-$ sudo make install
+I faced these problems. So to help me reduce the time spent bootstrapping and focus more on coding, and to teach myself python with some interesting project, I started to develop **Bob**.
+
+The idea behind Bob is simple. It should help me quickly go from source code to installable snap packages. **Snap packages** are central to Bob. Snap is a packaging format for apps and solves a lot of problems regarding runtime compatibilities. If you are not familiar with snaps, please read a little bit about them [here](https://snapcraft.io/). Snapcraft is an awesome piece of technology and definitely worth considering whether you want to create server apps or desktop apps.  
+
+Moving on; somewhere on the internet, I have a bunch of tar files, that contain libraries and headers that I want to use with my project. Bob goes online and fetches them for me. It also helps the build system use these fetched dependencies. 
+
+And when I  am done with the coding, Bob helps me package my code into installable **snap** packages or dependency tars to be used in other projects.  
+
+The downloading and bootstrapping of the dependencies is generic and should be same across programming languages.
+Variations occur for building projects. Currently supported build tools are:
+  - [cmake](https://cmake.org/).
+  
+ ## Getting started guide
+Following is a step by step guide to get started with a Bob project. First let's install the Bob onto your machine.
+
+### Installation (from source)
+***Clone this repository and install with pip.*** The following instructions were carried out on a ```Ubuntu 18.10``` machine. Use corresponding installation instructions for your distribution.
+
+```console
+machine:~$ sudo apt-get install python3-pip
+machine:~$ cd
+machine:~$ git clone https://github.com/amartya00/ProjectTemplate.git
+machine:~$ cd ProjectTemplate
+machine:~$ sudo pip3 install .
+machine:~$ bob --help
 ```
-## Details of workflow
-The workflow that this tool supports involves 4 main types of things:
-* Source code
-* Snap-parts (libs). These are libraries packaged into tar files with an accompanying ```CMakeLists.txt``` file. These are installed automatically into a local cache to be linked while building, or included while a snap. [Here](https://s3.amazonaws.com/amartya00-service-artifacts/a/0.1/a.tar) is a sample.
-* Snap-parts (headers). These are like the libs but they contain headers which are automatically installed in a local cache. The ```include_directories``` can make use of this folder when building. [Here](https://s3.amazonaws.com/amartya00-service-artifacts/a-headers/0.1/a-headers.tar) is a sample.
-* Snaps. You can build your project into a snap. The ```snapcraft.yaml``` file is automatically generated from your specified build configuration in the ```md.json``` file.
+On running the last command, you should get some help information, given everything else worked.
 
-## Example workflow for building a snap
-Lets do a walkthrough of a simple build process. Go to the ```tst/testprojects``` folder in the root of this package. It contains 2 sample projects: "main" and "b". Let's try to build the "main" project.
+### Your first Bob project
+#### Building the project.
+The necessary file to use Bob for a project is the ```md.json``` file. This file contains all the information that will tell Bob what to do with your project. More specifically, this file contains information about:
+  - Dependencies needed for the project:
+    - Names of the dependency packages.
+    - Versions of the dependency packages.
+    - Download location for the dependency packages.
+  - Build system to use for the project. Currently supported build systems are:
+    - [**CMake**](https://cmake.org/)
 
-### Metadata file
-Go to the "main" folder and observe the ```md.json``` file, which looks like this:
-```json
-{
-    "Package": "testmain",
-    "Version": "0.1",
-    "BuildDeps": [
-        {
-            "Package": "a",
-            "Version": "0.1"
-        },
-        {
-            "Package": "b",
-            "Version": "0.2"
-        },
-        {
-          "Package": "a-headers",
-          "Version": "0.1"
-        },
-        {
-          "Package": "b-headers",
-          "Version": "0.2"
-        }
-    ],
-    "Packaging": [
-      {
-        "Name": "testmain",
-        "Type": "snap",
-        "Version": "0.1",
-        "Summary": "Blah blah.",
-        "Description": "Blah blah.",
-        "Confinement": "devmode",
-        "Grade": "devel",
-        "Apps": [
-          {
-            "Name": "main",
-            "Command": "main.out"
-          }
-        ]
-      }
-    ]
-}
+So let's go ahead and create this file. To do that, lets run the following commands:
+```console
+machine:$ cd
+machine:$ mkdir HelloBob
+machine:$ cd HelloBob
+machine:$ touch md.json
 ```
 
-Observe the dependencies in the ```BuildDeps``` section. This section specifies the dependencies needed to build the "main" package. All these packages exist in my (publicly readable) S3 bucket. You can download these for inspection by running:
-```
-wget https://s3.amazonaws.com/amartya00-service-artifacts/<PACKAGE_NAME>/<PACKAGE_VERSION>/<PACKAGE_NAME>.tar
-```
+Now copy the contents of [this file](https://github.com/amartya00/ProjectTemplate/blob/master/tst/steps/data/md.json) in your newly created ```md.json``` file. 
 
-Observe the ```Packaging``` section. This contains a bunch of parameters needed for generating the ```snapcraft.yaml``` file. Documentation about snapcraft yaml file is available [here](https://docs.snapcraft.io/build-snaps/syntax). The "parts" section of the snapcraft yaml file is populated from the dependencies.
+Now let's create some source files. We will use our test project for this demo. Copy over the ```headers```, ```lib``` folders and the ```CMakeLists.txt``` file from [here](https://github.com/amartya00/ProjectTemplate/tree/master/tst/steps/data). At this point, we should have the project that is ready to be compiled.
 
-### Build steps
-Now that you are in the "main" folder and want to build the project, run the following command:
-```
-python ../../../bin/project.py build
+To build the project, simply type the following from the project's root directory:
+```console
+machine:$ bob
 ```
 
-This pulls in all dependencies and installs them in a folder called ```.packagecache```. Let's observe the contents of ```.packagecache```.
+This will build the project. If you read the ```CMakeLists.txt``` files, you will notice that we wanted to build a library called ```libtest.so```. You might also notice that a new folder has appeared called ```build```. Now go into the build folder and see what's there. If you have used ```cmake``` before, this should look pretty familiar to you. The library I talked about is in the lib folder in the build directory.
 
-```
-.
-├── dependencies.json
-├── headers
-│   ├── a
-│   │   └── a.h
-│   ├── b
-│   │   └── b.h
-│   └── k
-│       └── c.h
-└── lib
-    ├── liba.so
-    ├── libb.so
-    └── libk.so
-
+```console
+machine:$ cd build
+machine:$ ls lib/
 ```
 
-Packages a, b, a-headers and b-headers were installed in proper folders. All the header packages are installed in appropriately named folder "headers" and the libraries are installed in an appropriately named folder called "lib". Notice the file ```libk.so```. The package "k" is a dependency of "a" and "b" and not directly of "main". This tool pulls down the entire dependency graph and not just the immediate dependencies.
-
-### Package steps
-Now that we have built the project, lets package it into a snap. Just run this command:
-```
-python ../../../bin/project.py package
+#### Creating packages.
+Now let's try to create some packages. To do so, simply run:
+```console
+machine:$ bob -s Package
 ```
 
-This builds the project into a snap and puts the snap in the build folder. Observe the ```testmain_0.1_amd64.snap``` file in the build folder.
+Did you get this error message?
 
-## Example workflow for building a snap-part
-Now let's do a walkthrough for building a snap part. Navigate to the folder "b". This is a sample project. The code gets built into a library: ```libb.so``` and the header files get packaged up into a headers package.
+***[ERROR] Error occured Could not package because: You might not have snapcraft installed. Error message: [Errno 2] No such file or directory: 'snapcraft': 'snapcraft'***
 
-### Metadata
-Let's observe the ```md.json``` file. 
-```json
-{
-  "Package": "b",
-  "Version": "0.2",
-  "BuildDeps": [
-    {
-      "Package": "k-headers",
-      "Version": "0.1"
-    }
-  ],
-  "Dependencies": [
-    {
-      "Package": "k",
-      "Version": "0.1"
-    }
-  ],
-  "Packaging": [
-    {
-      "Name": "b",
-      "Type": "snap-part",
-      "PartType": modules,
-      "LibNames": ["libb.so"]
-    },
-    {
-      "Name": "b-headers",
-      "Type": "snap-part",
-      "PartType": "headers",
-      "HeadersSource": "headers",
-      "HeadersDest": "b"
-    }
-  ]
-}
+If you did that is because, as the error message says, you do not have ```snapcraft``` installed. What I should have mentioned is that our ```md.json``` file contains instructions to create an installable **snap** package. To be able to do that, you have to have ```snapcraft``` installed on your system. Now let's install ```snapcraft``` and try again. Again, if you have read up to this point I am assuming you have made yourself at least somewhat familiar with snaps. Snaps are a central part behind this tool.
+
+```console
+machine:$ sudo apt-get install snapcraft
+machine:$ bob -s Package
 ```
 
-Observe the ```Packaging``` section. It has 2 rules. One builds the snap-part library package ```b.tar```. The second one builds the headers package ```b-headers.tar```.
+Now look inside your build folder. You shoild see a snap package there:
 
-### Build commands
-To build this project, just run a similar command to the last one:
-```
-python ../../../bin/project.py build
+```console
+machine:$ ls build/*.snap
+build/myappsnap_23.0_amd64.snap
 ```
 
-### Package commands
-To package up the project, run the following command:
-```
-python ../../../bin/project.py package
-```
-As mentioned before, the build folder will contain 2 tar files:
-* ```b.tar```
-* ```b-headers.tar```
+Et voilà, you have gone from source code to having a snap package in a couple of commands! I know this very short tutorial raises more questions than it answers, but if you are even a little impressed, keep reading to understand the ideas behind this tool.
+  
 
