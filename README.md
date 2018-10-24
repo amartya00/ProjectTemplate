@@ -15,13 +15,17 @@ Bob is a tool to help you quickly get from source code to installable packages.
   - Tool save you time and make you happy.
 
 ### Long version
-Did you try to build a project and spend hours building its dependencies? Then spend a couple more trying to cook a docker image or EC2 AMI trying to create a deployable environment for your code? If yes, then continue reading...
+Did you try to build a project and spend hours ***building its dependencies***? Then spend a couple more trying to ***cook a docker image*** or ***EC2 AMI*** trying to create a ***deployable environment for your code***? If yes, then continue reading...
 
-Most programming languages have their own dependency management systems. Java has Maven, Python has pip. There is no standardized one for c++. Also, what if you code in multiple languages and have a lot of private dependencies that you do not care to upload to the programming language specific repositories?
+Most programming languages have their own dependency management systems. Java has Maven, Python has pip. There is no standardized one for c++. Also, what if you ***code in multiple languages*** and have a lot of ***private dependencies*** that you do not care to upload to the programming language specific repositories?
 
-I faced these problems. So to help me reduce the time spent bootstrapping and focus more on coding, and to teach myself python with some interesting project, I started to develop **Bob**.
+I faced these problems. So to help me ***reduce the time spent bootstrapping*** and focus more on coding, and to teach myself python with some interesting project, I started to develop **Bob**.
 
-The idea behind Bob is simple. It should help me quickly go from source code to installable snap packages. **Snap packages** are central to Bob. Snap is a packaging format for apps and solves a lot of problems regarding runtime compatibilities. If you are not familiar with snaps, please read a little bit about them [here](https://snapcraft.io/). Snapcraft is an awesome piece of technology and definitely worth considering whether you want to create server apps or desktop apps.  
+The idea behind Bob is simple. It should help me ***quickly go from source code to installable snap packages***.
+
+**Snap packages** are central to Bob. Snap is a packaging format for apps and solves a lot of problems regarding runtime compatibilities. If you are not familiar with snaps, please read a little bit about them [***here***](https://snapcraft.io/). Snapcraft is an awesome piece of technology and definitely worth considering whether you want to create server apps or desktop apps. So to Summarize:
+  - This tool helps with the ***dependency resolution issue*** by fetching your dependencies from your own private repo.
+  - It takes care of the ***runtime env issue*** bu producing snaps as deployable artifacts.
 
 Moving on; somewhere on the internet, I have a bunch of tar files, that contain libraries and headers that I want to use with my project. Bob goes online and fetches them for me. It also helps the build system use these fetched dependencies. 
 
