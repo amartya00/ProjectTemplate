@@ -1,7 +1,7 @@
 # **Bob**
-## Status
-[![codecov](https://codecov.io/gh/amartya00/ProjectTemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/amartya00/ProjectTemplate)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+
+[![codecov](https://codecov.io/gh/amartya00/ProjectTemplate/branch/master/graph/badge.svg)](https://codecov.io/gh/amartya00/ProjectTemplate)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/064fff2537d14417a2fb2a83fc4e900f)](https://www.codacy.com/app/amartya00/ProjectTemplate?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amartya00/ProjectTemplate&amp;utm_campaign=Badge_Grade)
 [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/064fff2537d14417a2fb2a83fc4e900f)](https://www.codacy.com/app/amartya00/ProjectTemplate?utm_source=github.com&utm_medium=referral&utm_content=amartya00/ProjectTemplate&utm_campaign=Badge_Coverage)
 
@@ -62,6 +62,7 @@ The necessary file to use Bob for a project is the ```md.json``` file. This file
     - [**CMake**](https://cmake.org/)
 
 So let's go ahead and create this file. To do that, lets run the following commands:
+
 ```console
 machine:$ cd
 machine:$ mkdir HelloBob
@@ -69,11 +70,12 @@ machine:$ cd HelloBob
 machine:$ touch md.json
 ```
 
-Now copy the contents of [this file](https://github.com/amartya00/ProjectTemplate/blob/master/tst/steps/data/md.json) in your newly created ```md.json``` file. 
+Now copy the contents of [this file](tst/steps/data/md.json) in your newly created ```md.json``` file. 
 
 Now let's create some source files. We will use our test project for this demo. Copy over the ```headers```, ```lib``` folders and the ```CMakeLists.txt``` file from [here](https://github.com/amartya00/ProjectTemplate/tree/master/tst/steps/data). At this point, we should have the project that is ready to be compiled.
 
 To build the project, simply type the following from the project's root directory:
+
 ```console
 machine:$ bob
 ```
@@ -87,6 +89,7 @@ machine:$ ls lib/
 
 #### Creating packages.
 Now let's try to create some packages. To do so, simply run:
+
 ```console
 machine:$ bob -s Package
 ```
@@ -110,5 +113,9 @@ build/myappsnap_23.0_amd64.snap
 ```
 
 Et voilà, you have gone from source code to having a snap package in a couple of commands! I know this very short tutorial raises more questions than it answers, but if you are even a little impressed, keep reading to understand the ideas behind this tool.
+
+# Documentation
+* [***Detailed description of Bob***](docs/DetailedIntro.md)
+* [***MD.json file syntax guide***](docs/MetadataJsonReference.md)
   
 
