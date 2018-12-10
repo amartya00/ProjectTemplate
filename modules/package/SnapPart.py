@@ -78,8 +78,10 @@ class SnapPart:
                 raise SnapPartException("A lib part type needs a LibNames parameter in packaging information.")
             cmake_str = cmake_str + "project(" + self.config["Name"] + ")\n"
 
+            files = ""
             for lib in self.config["LibNames"]:
-                cmake_str = cmake_str + "file(GLOB libs ${CMAKE_CURRENT_SOURCE_DIR}/" + lib + ")\n"
+                files = files + lib + " "
+            cmake_str = cmake_str + "set(libs " + files + ")\n"
             cmake_str = cmake_str + "install(FILES ${libs} DESTINATION lib)"
 
         elif install_target.lower() == "headers":
