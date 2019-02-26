@@ -1,9 +1,15 @@
 from setuptools import setup
 from os import path
 from io import open
+import sys
 
 here = path.abspath(path.dirname(__file__))
 
+version_maj = sys.version_info[0]
+version_min = sys.version_info[1]
+
+if version_maj < 3:
+    sys.exit("Need python 3 to run. You are trying to install this with python " + str(version_maj) + "." + str(version_min))
 
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()

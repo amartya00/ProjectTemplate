@@ -17,6 +17,11 @@ from modules.workflow.Workflow import WorkflowException, Workflow
 
 
 def execute_cmd():
+    version_maj = sys.version_info[0]
+    version_min = sys.version_info[1]
+    if version_maj < 3:
+        print("\n\n[ERROR] Need python 3 to run. Your version: " + str(version_maj) + "." + str(version_min))
+        sys.exit(1)
     parser = argparse.ArgumentParser(prog="Bob", description=__doc__, usage="bob [options]",
                                      formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-c", "--clean", help="Clean the project.", action="store_true")
